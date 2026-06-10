@@ -1,0 +1,55 @@
+html.lenis,
+html.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.scroll-stack-scroller {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: visible;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+.scroll-stack-scroller--window {
+  height: auto;
+  overflow: visible;
+}
+
+.scroll-stack-inner {
+  padding: 12vh 0 40vh;
+  min-height: 0;
+  position: relative;
+  isolation: isolate;
+}
+
+.scroll-stack-scroller--window .scroll-stack-inner {
+  padding: 0 0 32vh;
+}
+
+.scroll-stack-card {
+  transform-origin: center top;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  box-sizing: border-box;
+  position: relative;
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+.scroll-stack-card.story-scene--gallery {
+  overflow: visible;
+}
+
+.scroll-stack-end {
+  width: 100%;
+  height: 1px;
+}
