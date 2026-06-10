@@ -10,6 +10,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+assets/story-stack/story-stack.js
+assets/story-stack/story-stack.css
 *.local
 
 # Editor directories and files

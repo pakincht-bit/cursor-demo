@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/build-site.mjs",
     "build:story-stack": "vite build",
+    "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {

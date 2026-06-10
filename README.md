@@ -1,21 +1,32 @@
-# React + TypeScript + Vite + shadcn/ui
+# Fastwork Landing Page
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+Static marketing site with React-powered sections (story stack, pricing, hero blur) built as a Vite library bundle.
 
-## Adding components
-
-To add components to your app, run the following command:
+## Local development
 
 ```bash
-npx shadcn@latest add button
+npm install
+npm run build:story-stack   # rebuild React bundle into assets/story-stack
+# serve the repo root with any static server, e.g.:
+npx serve .
 ```
 
-This will place the ui components in the `src/components` directory.
+## Deploy to Vercel
 
-## Using components
+1. Push this repo to GitHub.
+2. Go to [vercel.com/new](https://vercel.com/new) and import the repository.
+3. Vercel reads `vercel.json` automatically:
+   - **Build command:** `npm run build`
+   - **Output directory:** `dist`
+4. Click **Deploy**.
 
-To use the components in your app, import them as follows:
+No environment variables are required.
 
-```tsx
-import { Button } from "@/components/ui/button"
-```
+## Build pipeline
+
+`npm run build` runs `scripts/build-site.mjs`, which:
+
+1. Builds the React story-stack bundle with Vite
+2. Copies `index.html`, `styles.css`, `script.js`, `aurora.js`, and `assets/` into `dist/`
+
+Vercel serves the `dist/` folder as a static site.

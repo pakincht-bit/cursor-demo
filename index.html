@@ -1,13 +1,580 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vite-app</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="assets/Logo-square.svg" type="image/svg+xml" />
+  <title>Collaboration — Layout Clone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Momo+Signature&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=132" />
+  <link rel="stylesheet" href="assets/story-stack/story-stack.css" />
+</head>
+<body>
+  <!-- Navigation -->
+  <header class="nav" id="siteNav">
+    <div class="nav__inner">
+      <a href="#hero" class="nav__logo" aria-label="fastwork home">
+        <img src="assets/Logo-black.svg" alt="fastwork" class="nav__logo-img" />
+      </a>
+      <nav class="nav__links" aria-label="Main">
+        <a href="#structure-tabs" class="nav__link">Features</a>
+        <a href="#tiers" class="nav__link">Package</a>
+        <a href="#testimonials" class="nav__link">Customers</a>
+        <a href="#faq" class="nav__link">FAQ</a>
+      </nav>
+      <div class="nav__actions">
+        <a href="#footer" class="btn btn--primary btn--pill btn--nav">Start for free</a>
+      </div>
+      <button class="nav__menu-btn" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero hero--wayflyer is-intro" id="hero">
+      <div class="hero__aurora" id="heroAurora" aria-hidden="true">
+        <div class="hero__aurora-canvas"></div>
+      </div>
+      <div class="hero__inner">
+        <div class="hero__content">
+          <img src="assets/Logo-white.svg" alt="fastwork" class="hero__logo" width="184" height="48" />
+          <h1 class="hero__title">
+            Run all your <span class="hero__title-accent">businesses</span><br />from one place.
+          </h1>
+          <p class="hero__subtitle">
+            Create multi-business profiles and manage every payment method in a single platform — so you can run your businesses with ease.
+          </p>
+          <div class="hero__cta">
+            <a href="#footer" class="btn btn--primary btn--pill">Get started →</a>
+            <p class="hero__cta-disclaimer">Unlimited teammates · free forever</p>
+          </div>
+        </div>
+        <div class="hero__media">
+          <div class="hero__media-frame">
+            <img
+              src="assets/background-color-01.jpg"
+              alt="Dashboard preview"
+              width="900"
+              height="540"
+            />
+            <button class="hero__play" type="button" id="heroPlayBtn" aria-label="Play video" aria-haspopup="dialog">
+              <svg width="20" height="22" viewBox="0 0 20 22" fill="none" aria-hidden="true">
+                <path d="M19 9.268a2 2 0 0 1 0 3.464L2.5 20.66A2 2 0 0 1 0 18.928V3.072A2 2 0 0 1 2.5 1.34L19 9.268Z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="hero-gradual-blur-root" aria-hidden="true"></div>
+    </section>
+
+    <!-- Problem story (Scroll Stack) -->
+    <section class="story-stack-section" id="story-stack" aria-label="The problem">
+      <div class="container story-stack-section__inner">
+        <div id="story-stack-root"></div>
+      </div>
+    </section>
+
+    <!-- Platform features -->
+    <section class="features-included" id="structure-tabs" aria-label="Platform features">
+      <div class="container features-included__inner">
+        <div class="features-included__layout">
+          <div class="features-included__steps">
+            <article class="features-included__step is-active" data-feature-index="0" aria-current="step">
+              <div class="features-included__step-visual">
+                <div class="features-included__card">
+                  <img
+                    class="features-included__image"
+                    src="assets/background-color-01.jpg"
+                    alt="Workspace dashboard showing multiple business profiles managed side by side"
+                    width="4113"
+                    height="2700"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+              <div class="features-included__copy">
+                <h3 class="features-included__title">Every business, one workspace</h3>
+                <p class="features-included__desc">Stop editing business details every time you switch companies. Set up a profile per business — your whole team invoices under the right entity, side by side, from one login.</p>
+                <ul class="features-included__bullets features-included__bullets--numbered">
+                  <li>
+                    <span class="features-included__number" aria-hidden="true"></span>
+                    <span><strong>Set up a team</strong><br>Create your team in 30 seconds. No payment required.</span>
+                  </li>
+                  <li>
+                    <span class="features-included__number" aria-hidden="true"></span>
+                    <span><strong>Invite your members</strong><br>Add teammates by email. Set roles and spending limits.</span>
+                  </li>
+                  <li>
+                    <span class="features-included__number" aria-hidden="true"></span>
+                    <span><strong>Register your business</strong><br>Tax ID lookup auto-fills your details. Once, for every future hire.</span>
+                  </li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="features-included__step" data-feature-index="1">
+              <div class="features-included__step-visual">
+                <div class="features-included__card">
+                  <img
+                    class="features-included__image"
+                    src="assets/background-color-02.jpg"
+                    alt="Payment methods panel with bank transfer, QR PromptPay, credit card, and pre-paid credit options"
+                    width="4113"
+                    height="2700"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+              <div class="features-included__copy">
+                <h3 class="features-included__title">All your payment methods, fully in control</h3>
+                <p class="features-included__desc">Fund work from the company, not personal pockets. Teammates pay through the business profile — bank transfer, QR PromptPay, credit card, or pre-paid credit — without fronting spend and chasing reimbursement.</p>
+                <ul class="features-included__bullets">
+                  <li>
+                    <span class="features-included__check" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                    </span>
+                    <span><strong>Bank transfer</strong><br>Pay directly from your registered business bank account.</span>
+                  </li>
+                  <li>
+                    <span class="features-included__check" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                    </span>
+                    <span><strong>QR PromptPay</strong><br>Scan and pay instantly with Thailand's national QR standard.</span>
+                  </li>
+                  <li>
+                    <span class="features-included__check" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                    </span>
+                    <span><strong>Credit card</strong><br>Use Visa, Mastercard, and other major cards.</span>
+                  </li>
+                  <li>
+                    <span class="features-included__check" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                    </span>
+                    <span><strong>Pre-paid credit</strong><br>Top up wallet balance and pay from available credit.</span>
+                  </li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="features-included__step" data-feature-index="2">
+              <div class="features-included__step-visual">
+                <div class="features-included__card">
+                  <img
+                    class="features-included__image"
+                    src="assets/background-color-03.jpg"
+                    alt="Documents library with invoices, quotations, and monthly statements in one place"
+                    width="4113"
+                    height="2700"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+              <div class="features-included__copy">
+                <h3 class="features-included__title">Get docs back, auto</h3>
+                <p class="features-included__desc">No more collecting receipts for the owner to review. Invoices, quotations, and monthly statements land in one place — ready when finance needs them.</p>
+                <ul class="features-included__bullets">
+                  <li>
+                    <span class="features-included__check" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                    </span>
+                    <span><strong>Invoices</strong><br>Download tax invoices for every transaction, ready for filing.</span>
+                  </li>
+                  <li>
+                    <span class="features-included__check" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                    </span>
+                    <span><strong>Quotations</strong><br>Pull approved quotes anytime — no digging through email.</span>
+                  </li>
+                  <li>
+                    <span class="features-included__check" aria-hidden="true">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
+                    </span>
+                    <span><strong>Monthly statements</strong><br>One consolidated statement per company, every month.</span>
+                  </li>
+                </ul>
+              </div>
+            </article>
+          </div>
+
+          <div class="features-included__sticky">
+            <div class="features-included__card features-included__media-stack">
+              <img
+                class="features-included__image is-active"
+                data-feature-index="0"
+                src="assets/background-color-01.jpg"
+                alt=""
+                width="4113"
+                height="2700"
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                class="features-included__image"
+                data-feature-index="1"
+                src="assets/background-color-02.jpg"
+                alt=""
+                width="4113"
+                height="2700"
+                loading="lazy"
+                decoding="async"
+              />
+              <img
+                class="features-included__image"
+                data-feature-index="2"
+                src="assets/background-color-03.jpg"
+                alt=""
+                width="4113"
+                height="2700"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Package — Business vs Enterprise comparison -->
+    <div id="pricing-section-root"></div>
+
+    <!-- Customer testimonials -->
+    <section class="testimonials" id="testimonials" data-testid="testimonials-section" aria-labelledby="testimonials-heading">
+      <div class="container testimonials__inner">
+        <header class="testimonials__header">
+          <h2 class="testimonials__heading" id="testimonials-heading">
+            Businesses across<br />
+            <span class="testimonials__heading-accent">Thailand are switching.</span>
+          </h2>
+        </header>
+        <div class="testimonials__grid" role="list">
+          <article
+            class="testimonial-card is-active"
+            role="listitem"
+            tabindex="0"
+            aria-pressed="true"
+            style="--testimonial-logo: url('assets/logos/google.svg')"
+          >
+            <div class="testimonial-card__logo">
+              <img
+                class="testimonial-card__logo-img"
+                src="assets/logos/google.svg"
+                alt="Google logo"
+                width="48"
+                height="48"
+              />
+            </div>
+            <div class="testimonial-card__content">
+              <blockquote class="testimonial-card__quote" lang="th">
+                <p>“การมี fastwork ช่วยให้ RakMao ไม่ต้องมี Graphic &amp; Production ของตัวเองเลย และใช้ fastwork เป็นผู้ผลิตสื่อโฆษณาทั้งหมด</p>
+                <p>รวมถึงการเทียบใบเสนอราคา 3 เจ้าในทุกการจ้างงาน เพื่อส่งให้ผู้บริหาร approve ซึ่งเห็นจะได้เห็นทั้งผลงานและราคาก่อนชำระเงิน ทำให้สะดวกมากขึ้น</p>
+                <p>สุดท้ายรู้สึกปลอดภัย เพราะถ้าเรายังไม่กดรับมอบงาน เงินก็จะยังไม่ได้ไหลไปยังคนที่ถูกจ้าง”</p>
+              </blockquote>
+              <footer class="testimonial-card__author">
+                <cite class="testimonial-card__name">Boom RakMao</cite>
+                <span class="testimonial-card__role">SCG</span>
+              </footer>
+            </div>
+          </article>
+          <article
+            class="testimonial-card"
+            role="listitem"
+            tabindex="0"
+            aria-pressed="false"
+            style="--testimonial-logo: url('assets/logos/meta.svg')"
+          >
+            <div class="testimonial-card__logo">
+              <img
+                class="testimonial-card__logo-img"
+                src="assets/logos/meta.svg"
+                alt="Meta logo"
+                width="48"
+                height="48"
+              />
+            </div>
+            <div class="testimonial-card__content">
+              <blockquote class="testimonial-card__quote" lang="th">
+                <p>“ใช้งาน fastwork ต่อเนื่องมามากกว่า 2 ปีแล้ว เพราะรู้สึกว่าการจ้างฟรีแลนซ์เราสามารถเลือกคนสลับไปมาได้ ทำให้ได้ไอเดียใหม่ๆ จากหลากหลายฟรีแลนซ์</p>
+                <p>ทั้งนี้ก็มีการใช้งานในหลายทีมภายในด้วย เช่น ecommerce team, marketing team</p>
+                <p>ส่วนเรื่องระบบเอกสารของ fastwork ก็มีการอำนวยความสะดวก ทำให้เอาไปส่งให้ทีมบัญชีทำงานต่อได้ง่าย”</p>
+              </blockquote>
+              <footer class="testimonial-card__author">
+                <cite class="testimonial-card__name">Yushi Group</cite>
+              </footer>
+            </div>
+          </article>
+          <article
+            class="testimonial-card"
+            role="listitem"
+            tabindex="0"
+            aria-pressed="false"
+            style="--testimonial-logo: url('assets/logos/ollama.svg')"
+          >
+            <div class="testimonial-card__logo">
+              <img
+                class="testimonial-card__logo-img"
+                src="assets/logos/ollama.svg"
+                alt="Ollama logo"
+                width="48"
+                height="48"
+              />
+            </div>
+            <div class="testimonial-card__content">
+              <blockquote class="testimonial-card__quote">
+                <p>“Shipping models to production shouldn't require a new stack every time. The same playbook now works whether we're serving researchers or enterprise customers.”</p>
+              </blockquote>
+              <footer class="testimonial-card__author">
+                <cite class="testimonial-card__name">Ryan Millstein</cite>
+                <span class="testimonial-card__role">Head of Platform, Ollama</span>
+              </footer>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq" aria-labelledby="faq-heading">
+      <div class="container faq__inner">
+        <h2 class="faq__heading" id="faq-heading">
+          Frequently asked<br />
+          <span class="faq__heading-accent">questions</span>
+        </h2>
+        <div class="faq__list" id="faq-list">
+          <div class="faq__item">
+            <h3 class="faq__question-wrap">
+              <button
+                type="button"
+                class="faq__trigger"
+                id="faq-trigger-1"
+                aria-expanded="false"
+                aria-controls="faq-panel-1"
+              >
+                <span class="faq__question">How can I integrate Figma designs into fastwork to streamline my website creation process?</span>
+                <span class="faq__icon" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="faq__panel" id="faq-panel-1" role="region" aria-labelledby="faq-trigger-1" hidden>
+              <p class="faq__answer">Import Figma frames directly into fastwork to preserve layers, spacing, and typography. Your design team can hand off assets without exporting static files, and developers can refine layouts in the visual editor while staying aligned with the original mockups.</p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <h3 class="faq__question-wrap">
+              <button
+                type="button"
+                class="faq__trigger"
+                id="faq-trigger-2"
+                aria-expanded="false"
+                aria-controls="faq-panel-2"
+              >
+                <span class="faq__question">How do I maintain brand consistency across multiple website pages?</span>
+                <span class="faq__icon" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="faq__panel" id="faq-panel-2" role="region" aria-labelledby="faq-trigger-2" hidden>
+              <p class="faq__answer">Use global styles, reusable components, and design tokens in fastwork so colors, fonts, and spacing stay consistent. Update a component once and every page that uses it reflects the change automatically.</p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <h3 class="faq__question-wrap">
+              <button
+                type="button"
+                class="faq__trigger"
+                id="faq-trigger-3"
+                aria-expanded="false"
+                aria-controls="faq-panel-3"
+              >
+                <span class="faq__question">What makes fastwork different from other website design tools?</span>
+                <span class="faq__icon" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="faq__panel" id="faq-panel-3" role="region" aria-labelledby="faq-trigger-3" hidden>
+              <p class="faq__answer">fastwork combines visual design, CMS, hosting, and collaboration in one platform. You build production-ready sites without plugins or separate tools, and every teammate—from designers to marketers—can contribute in the same workspace.</p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <h3 class="faq__question-wrap">
+              <button
+                type="button"
+                class="faq__trigger"
+                id="faq-trigger-4"
+                aria-expanded="false"
+                aria-controls="faq-panel-4"
+              >
+                <span class="faq__question">What website design features does fastwork offer?</span>
+                <span class="faq__icon" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="faq__panel" id="faq-panel-4" role="region" aria-labelledby="faq-trigger-4" hidden>
+              <p class="faq__answer">fastwork includes responsive layouts, interactions and animations, CMS collections, SEO controls, form builders, localization, and built-in analytics. You can also extend sites with custom code when you need advanced functionality.</p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <h3 class="faq__question-wrap">
+              <button
+                type="button"
+                class="faq__trigger"
+                id="faq-trigger-5"
+                aria-expanded="false"
+                aria-controls="faq-panel-5"
+              >
+                <span class="faq__question">How can I design my own website without coding experience?</span>
+                <span class="faq__icon" aria-hidden="true"></span>
+              </button>
+            </h3>
+            <div class="faq__panel" id="faq-panel-5" role="region" aria-labelledby="faq-trigger-5" hidden>
+              <p class="faq__answer">Start with a template or blank canvas and drag elements onto the page. fastwork’s visual editor lets you adjust typography, spacing, and imagery with point-and-click controls—no HTML or CSS required to publish a polished site.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- CTA Footer -->
+  <footer class="footer-cta" id="footer">
+    <div class="container footer-cta__inner">
+      <div class="footer-cta__intro">
+        <h2 class="footer-cta__headline">Ready to manage <span class="footer-cta__headline-accent">yours</span><br />in one place?</h2>
+        <div class="footer-cta__actions">
+          <div class="footer-cta__buttons">
+            <a href="#" class="btn btn--footer-primary btn--pill">Get started free</a>
+          </div>
+          <p class="footer-cta__disclaimer">Unlimited teammates · free forever</p>
+        </div>
+      </div>
+      <div class="footer-cta__preview" aria-hidden="true">
+        <div class="footer-cta__preview-glow"></div>
+        <div class="footer-cta__preview-frame">
+          <img
+            src="assets/background-color-02.jpg"
+            alt=""
+            width="4113"
+            height="2700"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sitemap Footer -->
+  <footer class="footer" id="site-footer">
+    <div class="footer__watermark" aria-hidden="true">
+      <img src="assets/logo-text.png" alt="" width="960" height="240" />
+    </div>
+    <div class="container footer__inner">
+      <div class="footer__columns">
+        <div class="footer__logo-col">
+          <a href="#hero" class="footer__logo" aria-label="Fastwork home">
+            <img src="assets/Logo-white.svg" alt="Fastwork" class="footer__logo-img" width="92" height="24" />
+          </a>
+        </div>
+
+        <nav class="footer__col" aria-label="Fastwork">
+          <h3 class="footer__heading">Fastwork</h3>
+          <ul class="footer__links">
+            <li><a href="#hero">home</a></li>
+            <li><a href="#tiers">pricing</a></li>
+            <li><a href="#">downloads</a></li>
+            <li><a href="#">changelog</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer__col" aria-label="Tools">
+          <h3 class="footer__heading">Tools</h3>
+          <ul class="footer__links">
+            <li><a href="#">Fastwork Web</a></li>
+            <li><a href="#">Fastwork Desktop</a></li>
+            <li><a href="#">Fastwork MCP</a></li>
+            <li><a href="#">Fastwork Snapshot</a></li>
+            <li><a href="#">Fastwork Shaders</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer__col" aria-label="Community">
+          <h3 class="footer__heading">Community</h3>
+          <ul class="footer__links">
+            <li><a href="#">twitter</a></li>
+            <li><a href="#">discord</a></li>
+            <li><a href="#">slack</a></li>
+            <li><a href="#">reddit</a></li>
+            <li><a href="#">youtube</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer__col" aria-label="Resources">
+          <h3 class="footer__heading">Resources</h3>
+          <ul class="footer__links">
+            <li><a href="#">docs</a></li>
+            <li><a href="#">blog</a></li>
+            <li><a href="#">roadmap</a></li>
+          </ul>
+          <h3 class="footer__heading footer__heading--sub">Compare</h3>
+          <ul class="footer__links">
+            <li><a href="#">Fastwork vs Figma</a></li>
+            <li><a href="#">Fastwork vs Pencil</a></li>
+          </ul>
+        </nav>
+
+        <nav class="footer__col" aria-label="Legal">
+          <h3 class="footer__heading">Legal</h3>
+          <ul class="footer__links">
+            <li><a href="#">privacy</a></li>
+            <li><a href="#">terms</a></li>
+            <li><a href="#">dpa</a></li>
+            <li><a href="#">subprocessors</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="footer__bottom">
+        <span class="footer__copyright">© 2026</span>
+        <a href="mailto:team@fastwork.com" class="footer__email">team@fastwork.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Hero video modal -->
+  <div class="video-modal" id="videoModal" hidden>
+    <div class="video-modal__backdrop" data-video-modal-close tabindex="-1"></div>
+    <div
+      class="video-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="videoModalTitle"
+    >
+      <h2 class="visually-hidden" id="videoModalTitle">Product video</h2>
+      <button
+        type="button"
+        class="video-modal__close"
+        id="videoModalClose"
+        aria-label="Close video"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="video-modal__player">
+        <iframe
+          id="videoModalIframe"
+          title="Product video"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="assets/story-stack/story-stack.js"></script>
+  <script type="module" src="script.js?v=34"></script>
+</body>
 </html>

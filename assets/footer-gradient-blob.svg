@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 420" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="footerGlowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#84B5FF"/>
+      <stop offset="33%" stop-color="#0569FF"/>
+      <stop offset="66%" stop-color="#AE8EFF"/>
+      <stop offset="100%" stop-color="#FFCCA5"/>
+    </linearGradient>
+  </defs>
+  <path
+    fill="url(#footerGlowGrad)"
+    d="M0 420 C0 280 40 180 120 140 C200 100 300 120 360 60 C420 0 320 -40 200 20 C80 100 0 220 0 420 Z"
+  />
+</svg>

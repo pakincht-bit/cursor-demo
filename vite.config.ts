@@ -15,7 +15,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: path.resolve(__dirname, "../assets/story-stack"),
+    outDir: path.resolve(__dirname, "./assets/story-stack"),
     emptyOutDir: true,
     lib: {
       entry: path.resolve(__dirname, "src/story-stack-mount.tsx"),
