@@ -338,7 +338,8 @@ class Media {
     borderRadius = 0,
     font,
     labelInside = false,
-    staticGallery = false
+    staticGallery = false,
+    loopItems = true
   }) {
     this.extra = 0;
     this.geometry = geometry;
@@ -358,6 +359,7 @@ class Media {
     this.font = font;
     this.labelInside = labelInside;
     this.staticGallery = staticGallery;
+    this.loopItems = loopItems;
     this.createShader();
     this.createMesh();
     this.createTitle();
@@ -463,7 +465,7 @@ class Media {
       this.program.uniforms.uSpeed.value = this.speed;
     }
 
-    if (this.staticGallery) return;
+    if (this.staticGallery || !this.loopItems) return;
 
     const planeOffset = this.plane.scale.x / 2;
     const viewportOffset = this.viewport.width / 2;
@@ -517,7 +519,8 @@ class App {
       enableWheel = true,
       interactive = true,
       scrollLinked = false,
-      labelInside = false
+      labelInside = false,
+      duplicateItems = true
     } = {}
   ) {
     document.documentElement.classList.remove('no-js');
@@ -527,6 +530,7 @@ class App {
     this.interactive = interactive;
     this.scrollLinked = scrollLinked;
     this.labelInside = labelInside;
+    this.duplicateItems = duplicateItems;
     this.itemCount = 0;
     this.scrollBase = 0;
     this.scrollTravel = 0;
@@ -590,7 +594,9 @@ class App {
   createMedias(items, bend = 1, textColor, borderRadius, font) {
     const galleryItems = items && items.length ? items : [];
     this.itemCount = galleryItems.length;
-    this.mediasImages = galleryItems.concat(galleryItems);
+    this.mediasImages = this.duplicateItems
+      ? galleryItems.concat(galleryItems)
+      : galleryItems;
     this.medias = this.mediasImages.map((data, index) => {
       return new Media({
         geometry: this.planeGeometry,
@@ -609,7 +615,8 @@ class App {
         borderRadius,
         font,
         labelInside: this.labelInside,
-        staticGallery: !this.interactive && !this.scrollLinked
+        staticGallery: !this.interactive && !this.scrollLinked,
+        loopItems: this.duplicateItems
       });
     });
   }
@@ -737,6 +744,7 @@ export default forwardRef(function CircularGallery(
     interactive = true,
     scrollLinked = false,
     labelInside = false,
+    duplicateItems = true,
     className = ''
   },
   ref
@@ -767,7 +775,8 @@ export default forwardRef(function CircularGallery(
         enableWheel,
         interactive,
         scrollLinked,
-        labelInside
+        labelInside,
+        duplicateItems
       });
       appRef.current = app;
     });
@@ -788,7 +797,8 @@ export default forwardRef(function CircularGallery(
     enableWheel,
     interactive,
     scrollLinked,
-    labelInside
+    labelInside,
+    duplicateItems
   ]);
   const staticClass = interactive ? '' : ' circular-gallery--static';
   return (

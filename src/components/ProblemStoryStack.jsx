@@ -475,6 +475,7 @@ function FreelancerGallery({ scene }) {
           scrollEase={0.06}
           interactive={false}
           scrollLinked
+          duplicateItems={false}
         />
       </div>
     </>
