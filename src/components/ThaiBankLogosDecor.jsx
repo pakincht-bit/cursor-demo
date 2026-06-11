@@ -36,13 +36,13 @@ const CARD_LOGOS = [
     id: 'visa',
     label: 'Visa',
     variant: 'card',
-    src: 'assets/bank-logo/Type=Default.png'
+    src: 'assets/bank-logo/visa.svg'
   },
   {
     id: 'mastercard',
     label: 'Mastercard',
     variant: 'card',
-    src: 'assets/bank-logo/Type=Color, showText=False, showSymbol=True.png'
+    src: 'assets/bank-logo/mastercard.svg'
   }
 ];
 

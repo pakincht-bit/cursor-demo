@@ -2,6 +2,16 @@ import { useLayoutEffect, useRef, useCallback } from 'react';
 import Lenis from 'lenis';
 import './ScrollStack.css';
 
+const MOBILE_BREAKPOINT = 768;
+
+function isMobileViewport() {
+  return window.innerWidth <= MOBILE_BREAKPOINT;
+}
+
+function isMobileFlowCard(card) {
+  return isMobileViewport() && card.classList.contains('story-scene--payment-bento');
+}
+
 export const ScrollStackItem = ({ children, itemClassName = '' }) => (
   <div className={`scroll-stack-card ${itemClassName}`.trim()}>{children}</div>
 );
@@ -98,6 +108,17 @@ const ScrollStack = ({
 
       cards.forEach((card, i) => {
         if (!card) return;
+
+        if (isMobileFlowCard(card)) {
+          card.style.transform = 'none';
+          card.style.filter = 'none';
+          card.style.visibility = 'visible';
+          card.style.opacity = '1';
+          card.style.pointerEvents = 'auto';
+          card.style.zIndex = String(10 + i);
+          lastTransformsRef.current.set(i, { transform: 'none', filter: 'none' });
+          return;
+        }
 
         const cardTop = cardMetricsRef.current[i]?.top ?? 0;
         const triggerStart = cardTop - stackPositionPx - itemStackDistance * i;

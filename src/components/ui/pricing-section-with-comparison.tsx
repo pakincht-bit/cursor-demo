@@ -17,7 +17,7 @@ interface ComparisonFeature {
 const PLANS = [
   {
     id: "business",
-    name: "Fastwork for Business",
+    name: "For Business",
     description:
       "Self-serve. For SMEs and mid-market teams that want to hire freelancers as a business, not as individuals.",
     cta: "Set up your business",
@@ -26,7 +26,7 @@ const PLANS = [
   },
   {
     id: "enterprise",
-    name: "Fastwork for Enterprise",
+    name: "For Enterprise",
     description:
       "Sales-led. For large businesses with procurement, legal, and security review requirements.",
     cta: "Talk to Enterprise team",
@@ -63,18 +63,18 @@ const FEATURES: ComparisonFeature[] = [
   },
   {
     name: "Freelances sourcing",
-    business: false,
-    enterprise: true,
+    business: "Self-serve — browse & hire from pool",
+    enterprise: "Fastwork sources freelancers for you",
   },
   {
     name: "Dedicated Account Manager + Project Manager",
-    business: false,
-    enterprise: true,
+    business: "Self-serve + platform support",
+    enterprise: "Dedicated AM & PM",
   },
   {
-    name: "Output VAT deduction",
+    name: "Input VAT deduction",
     business: "Only if freelances allow",
-    enterprise: true,
+    enterprise: "Full input VAT deduction",
   },
   {
     name: "Custom contracts",
@@ -84,13 +84,13 @@ const FEATURES: ComparisonFeature[] = [
       "Non Disclosure Agreement",
       "other",
     ],
-    business: false,
-    enterprise: true,
+    business: "Standard platform terms",
+    enterprise: "MSA, DPA, NDA & custom agreements",
   },
   {
     name: "Vendor security questionnaire / SSO review",
-    business: false,
-    enterprise: true,
+    business: "Standard platform security",
+    enterprise: "Security questionnaire & SSO review",
   },
   {
     name: "Minimum spending",
@@ -162,19 +162,9 @@ function Pricing() {
     <section
       className="pricing-section"
       id="tiers"
-      aria-labelledby="tiers-heading"
+      aria-label="Pricing plans"
     >
       <div className="pricing-section__inner">
-        <header className="pricing-section__header">
-          <h2 className="pricing-section__heading" id="tiers-heading">
-            Pick the shape that fits your business.
-          </h2>
-          <p className="pricing-section__sub">
-            Most teams start with Business and graduate to Enterprise as they
-            scale. Either way, you can move at any time.
-          </p>
-        </header>
-
         <div className="pricing-section__table">
           <div className="pricing-section__plans">
             <div className="pricing-section__plan-spacer" aria-hidden="true" />

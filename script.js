@@ -46,6 +46,73 @@ import { initAurora } from "./aurora.js";
   updateNav(true);
 })();
 
+(function initMobileNav() {
+  const menuBtn = document.getElementById("navMenuBtn");
+  const drawer = document.getElementById("navDrawer");
+  if (!menuBtn || !drawer) return;
+
+  const panel = drawer.querySelector(".nav-drawer__panel");
+  const closeTargets = drawer.querySelectorAll("[data-nav-close], .nav-drawer__link, .nav-drawer__cta");
+  let previousFocus = null;
+
+  function openDrawer() {
+    previousFocus = document.activeElement;
+    drawer.hidden = false;
+    requestAnimationFrame(() => {
+      drawer.classList.add("is-open");
+    });
+    menuBtn.setAttribute("aria-expanded", "true");
+    menuBtn.setAttribute("aria-label", "Close menu");
+    document.body.classList.add("is-nav-drawer-open");
+    drawer.querySelector(".nav-drawer__link")?.focus();
+    document.addEventListener("keydown", onKeydown);
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove("is-open");
+    menuBtn.setAttribute("aria-expanded", "false");
+    menuBtn.setAttribute("aria-label", "Open menu");
+    document.body.classList.remove("is-nav-drawer-open");
+    document.removeEventListener("keydown", onKeydown);
+
+    window.setTimeout(() => {
+      if (!drawer.classList.contains("is-open")) {
+        drawer.hidden = true;
+      }
+    }, 320);
+
+    if (previousFocus && typeof previousFocus.focus === "function") {
+      previousFocus.focus();
+    }
+    previousFocus = null;
+  }
+
+  function onKeydown(event) {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeDrawer();
+    }
+  }
+
+  menuBtn.addEventListener("click", () => {
+    if (drawer.classList.contains("is-open")) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
+  });
+
+  closeTargets.forEach((target) => {
+    target.addEventListener("click", closeDrawer);
+  });
+
+  drawer.querySelector(".nav-drawer__backdrop")?.addEventListener("click", closeDrawer);
+
+  panel?.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+})();
+
 const faqTriggers = document.querySelectorAll(".faq__trigger");
 
 function closeFaqItem(trigger) {

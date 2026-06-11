@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import CircularGallery from './CircularGallery';
 import { FREELANCER_GALLERY_ITEMS } from './freelancerGalleryItems';
 import MagicBento from './MagicBento';
+import RotatingText from './RotatingText';
 import ScrollStack, { ScrollStackItem } from './ScrollStack';
 import './ProblemStoryStack.css';
 
@@ -85,6 +86,237 @@ function getGalleryScrollProgress(card) {
   return (scrollTop - pinStart) / (pinEnd - pinStart);
 }
 
+const BRIDGE_LINES = [
+  { id: 'a', startX: 2, colors: ['#84b5ff', '#0569ff'], width: 2.2, opacity: 0.78 },
+  { id: 'b', startX: 8, colors: ['#84b5ff', '#0569ff'], width: 2.4, opacity: 0.82 },
+  { id: 'c', startX: 14, colors: ['#0569ff', '#84b5ff'], width: 2.8, opacity: 0.88 },
+  { id: 'd', startX: 22, colors: ['#0569ff', '#ae8eff'], width: 2.4, opacity: 0.8 },
+  { id: 'e', startX: 30, colors: ['#84b5ff', '#ae8eff'], width: 2.6, opacity: 0.84 },
+  { id: 'f', startX: 38, colors: ['#84b5ff', '#8565ff'], width: 2.2, opacity: 0.74 },
+  { id: 'g', startX: 46, colors: ['#ae8eff', '#8565ff'], width: 2.5, opacity: 0.76 },
+  { id: 'h', startX: 54, colors: ['#ae8eff', '#ffcca5'], width: 2.4, opacity: 0.8 },
+  { id: 'i', startX: 62, colors: ['#8565ff', '#ffcca5'], width: 2.8, opacity: 0.86 },
+  { id: 'j', startX: 70, colors: ['#8565ff', '#ffb508'], width: 2.4, opacity: 0.82 },
+  { id: 'k', startX: 78, colors: ['#ffcca5', '#ffb508'], width: 2.6, opacity: 0.78 },
+  { id: 'l', startX: 86, colors: ['#ffcca5', '#ae8eff'], width: 2.2, opacity: 0.72 },
+  { id: 'm', startX: 92, colors: ['#ffb508', '#ffcca5'], width: 2.4, opacity: 0.76 },
+  { id: 'n', startX: 98, colors: ['#84b5ff', '#ffcca5'], width: 2, opacity: 0.7 }
+];
+
+const BRIDGE_LOGO_SRC = 'assets/Logo-black.svg';
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function getBridgeTargetPoint(card, badge) {
+  const cardRect = card.getBoundingClientRect();
+  const badgeRect = badge.getBoundingClientRect();
+
+  if (!cardRect.width || !cardRect.height) {
+    return { x: 50, y: 38 };
+  }
+
+  return {
+    x: ((badgeRect.left + badgeRect.width / 2 - cardRect.left) / cardRect.width) * 100,
+    y: ((badgeRect.top + badgeRect.height / 2 - cardRect.top) / cardRect.height) * 100
+  };
+}
+
+function getBridgeScrollProgress(card) {
+  const scrollTop = window.scrollY;
+  const cardTop = getDocumentOffsetTop(card);
+  const viewport = window.innerHeight;
+  const scroller = card.closest('.scroll-stack-scroller');
+  const endElement = scroller?.querySelector('.scroll-stack-end');
+  const pinStart = cardTop;
+  const pinEnd = endElement
+    ? getDocumentOffsetTop(endElement) - viewport * 0.5
+    : pinStart + viewport * 0.85;
+
+  const animStart = pinStart;
+  const animEnd = Math.min(pinStart + viewport * 0.72, pinEnd);
+
+  if (scrollTop <= animStart) return 0;
+  if (scrollTop >= animEnd) return 1;
+  return (scrollTop - animStart) / (animEnd - animStart);
+}
+
+function BridgeConvergenceLines({ svgRef }) {
+  return (
+    <svg
+      ref={svgRef}
+      className="story-scene__bridge-lines"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <filter id="story-bridge-line-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="0.55" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <radialGradient id="story-bridge-core-glow" cx="50%" cy="38%" r="50%">
+          <stop offset="0%" stopColor="#84b5ff" stopOpacity="0.35" />
+          <stop offset="35%" stopColor="#ae8eff" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+        </radialGradient>
+        {BRIDGE_LINES.map(line => (
+          <linearGradient
+            key={`gradient-${line.id}`}
+            id={`story-bridge-gradient-${line.id}`}
+            data-bridge-gradient={line.id}
+            gradientUnits="userSpaceOnUse"
+            x1={line.startX}
+            y1="-4"
+            x2="50"
+            y2="38"
+          >
+            <stop offset="0%" stopColor={line.colors[0]} stopOpacity="0.15" />
+            <stop offset="45%" stopColor={line.colors[0]} stopOpacity="0.95" />
+            <stop offset="100%" stopColor={line.colors[1]} stopOpacity="1" />
+          </linearGradient>
+        ))}
+      </defs>
+
+      <circle
+        className="story-scene__bridge-core"
+        data-bridge-core=""
+        cx="50"
+        cy="38"
+        r="0"
+        fill="url(#story-bridge-core-glow)"
+      />
+
+      {BRIDGE_LINES.map(line => (
+        <line
+          key={line.id}
+          data-bridge-line={line.id}
+          x1={line.startX}
+          y1="-4"
+          x2={line.startX}
+          y2="-4"
+          stroke={`url(#story-bridge-gradient-${line.id})`}
+          strokeWidth={line.width}
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
+          filter="url(#story-bridge-line-glow)"
+          opacity={line.opacity}
+        />
+      ))}
+    </svg>
+  );
+}
+
+function BridgeLogoBadge({ badgeRef }) {
+  return (
+    <div ref={badgeRef} className="story-scene__bridge-badge">
+      <img
+        src={BRIDGE_LOGO_SRC}
+        alt="fastwork"
+        className="story-scene__bridge-badge-logo"
+        draggable="false"
+      />
+    </div>
+  );
+}
+
+function BridgeScene({ scene }) {
+  const cardRef = useRef(null);
+  const linesRef = useRef(null);
+  const badgeRef = useRef(null);
+  const headlineRef = useRef(null);
+
+  useEffect(() => {
+    let frame = 0;
+    const lineConnectEnd = 0.76;
+
+    const updateScene = progress => {
+      const card = cardRef.current?.closest('.scroll-stack-card');
+      const badge = badgeRef.current;
+      const svg = linesRef.current;
+      const headline = headlineRef.current;
+      if (!card || !badge || !svg) return;
+
+      const lineProgress = Math.min(1, progress / lineConnectEnd);
+      const lineEased = easeOutCubic(lineProgress);
+      const textProgress =
+        progress <= lineConnectEnd
+          ? 0
+          : Math.min(1, (progress - lineConnectEnd) / (1 - lineConnectEnd));
+      const textEased = easeOutCubic(textProgress);
+      const target = getBridgeTargetPoint(card, badge);
+      const core = svg.querySelector('[data-bridge-core]');
+      const coreGlow = svg.querySelector('#story-bridge-core-glow');
+
+      if (coreGlow) {
+        coreGlow.setAttribute('cx', `${target.x}%`);
+        coreGlow.setAttribute('cy', `${target.y}%`);
+      }
+
+      if (core) {
+        core.setAttribute('cx', String(target.x));
+        core.setAttribute('cy', String(target.y));
+        core.setAttribute('r', String(5 + lineEased * 14));
+        core.setAttribute('opacity', String(lineEased * 0.85));
+      }
+
+      BRIDGE_LINES.forEach(line => {
+        const gradient = svg.querySelector(`[data-bridge-gradient="${line.id}"]`);
+        if (gradient) {
+          gradient.setAttribute('x2', String(target.x));
+          gradient.setAttribute('y2', String(target.y));
+        }
+
+        const el = svg.querySelector(`[data-bridge-line="${line.id}"]`);
+        if (!el) return;
+
+        const x2 = line.startX + (target.x - line.startX) * lineEased;
+        const y2 = -4 + (target.y + 4) * lineEased;
+        el.setAttribute('x2', String(x2));
+        el.setAttribute('y2', String(y2));
+        el.setAttribute('opacity', String(line.opacity * Math.min(1, 0.25 + lineEased * 0.85)));
+      });
+
+      badge.style.setProperty('--bridge-badge-glow', String(lineEased));
+
+      if (headline) {
+        headline.style.setProperty('--bridge-headline-opacity', String(textEased));
+        headline.style.setProperty('--bridge-headline-y', `${(1 - textEased) * 14}px`);
+      }
+    };
+
+    const tick = () => {
+      const card = cardRef.current?.closest('.scroll-stack-card');
+      const progress = card ? getBridgeScrollProgress(card) : 0;
+
+      updateScene(progress);
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  return (
+    <>
+      <div className="story-scene__bridge-backdrop" aria-hidden="true">
+        <BridgeConvergenceLines svgRef={linesRef} />
+      </div>
+      <div ref={cardRef} className="story-scene__content story-scene__content--bridge">
+        <BridgeLogoBadge badgeRef={badgeRef} />
+        <div ref={headlineRef} className="story-scene__bridge-headline-wrap">
+          <SceneHeadline scene={scene} />
+        </div>
+        {scene.kicker ? <p className="story-scene__kicker">{scene.kicker}</p> : null}
+      </div>
+    </>
+  );
+}
+
 function PaymentBento({ scene }) {
   return (
     <>
@@ -101,7 +333,7 @@ function PaymentBento({ scene }) {
           enableSpotlight={false}
           enableBorderGlow={true}
           enableTilt={false}
-          enableMagnetism={true}
+          enableMagnetism={false}
           clickEffect={false}
           spotlightRadius={330}
           particleCount={12}
@@ -113,6 +345,28 @@ function PaymentBento({ scene }) {
 }
 
 function SceneHeadline({ scene }) {
+  if (scene.headlineRotating) {
+    return (
+      <h2 className="story-scene__headline story-scene__headline--rotating">
+        {scene.headlinePrefix}{' '}
+        <RotatingText
+          texts={scene.headlineRotating}
+          mainClassName="story-scene__headline-rotate"
+          elementLevelClassName="story-scene__headline-accent story-scene__headline-rotate-char"
+          splitLevelClassName="story-scene__headline-rotate-word"
+          staggerFrom="center"
+          initial={{ y: '40%', opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: '-40%', opacity: 0 }}
+          staggerDuration={0.05}
+          transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+          rotationInterval={2500}
+          splitBy="words"
+        />
+      </h2>
+    );
+  }
+
   return (
     <h2 className="story-scene__headline">
       {scene.headlineLeadAccent ? (
@@ -302,7 +556,8 @@ const SCENES = [
   {
     id: 'teams',
     eyebrow: 'Built for teams',
-    headline: 'Your whole team can hire — and pay — together.',
+    headlinePrefix: 'Your whole team can',
+    headlineRotating: ['hire', 'pay', 'share'],
     kicker:
       'Invite members to hire freelancers on shared business profiles, use team payment methods, and keep documents in one place.',
     tone: 'benefit',
@@ -310,7 +565,6 @@ const SCENES = [
   },
   {
     id: 'product',
-    eyebrow: 'Introducing fastwork',
     headline: 'Everything above.',
     headlineAccent: 'One platform.',
     kicker: '',
@@ -417,6 +671,14 @@ function SceneCard({ scene }) {
     return (
       <ScrollStackItem itemClassName={`story-scene ${toneClass} story-scene--teams`}>
         <TeamPlatformScene scene={scene} />
+      </ScrollStackItem>
+    );
+  }
+
+  if (scene.tone === 'bridge') {
+    return (
+      <ScrollStackItem itemClassName={`story-scene ${toneClass}`}>
+        <BridgeScene scene={scene} />
       </ScrollStackItem>
     );
   }

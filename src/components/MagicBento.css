@@ -124,7 +124,7 @@
 
 .magic-bento .magic-bento-card__bank-logos--cards {
   grid-template-columns: repeat(2, max-content);
-  column-gap: 0.55em;
+  column-gap: 0.7em;
 }
 
 .magic-bento .magic-bento-card__bank-logo {
@@ -143,9 +143,21 @@
   object-fit: contain;
 }
 
+.magic-bento .magic-bento-card__bank-logo--card {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .magic-bento .magic-bento-card__bank-logo--card img {
-  max-width: 2.35em;
-  border-radius: 0.22em;
+  max-width: 6em;
+  border-radius: 0;
+}
+
+.magic-bento .magic-bento-card:has(.magic-bento-card__bank-logos--cards):hover .magic-bento-card__bank-logo--card:first-child {
+  transform: rotate(-4deg) translateY(-2px);
+}
+
+.magic-bento .magic-bento-card:has(.magic-bento-card__bank-logos--cards):hover .magic-bento-card__bank-logo--card:last-child {
+  transform: rotate(4deg) translateY(-2px);
 }
 
 .magic-bento .magic-bento-card__invoice-stack {
@@ -193,12 +205,12 @@
 
 .magic-bento .magic-bento-card:has(.magic-bento-card__invoice-stack):hover .magic-bento-card__invoice-header--back {
   opacity: 1;
-  transform: translate(calc(-50% + 0.1em), calc(-50% - 1.35em)) rotate(-0.85deg);
+  transform: translate(calc(-50% + 0.1em), calc(-50% - 3em)) rotate(-0.85deg);
 }
 
 .magic-bento .magic-bento-card:has(.magic-bento-card__invoice-stack):hover .magic-bento-card__invoice-header--mid {
   opacity: 1;
-  transform: translate(calc(-50% + 0.05em), calc(-50% - 0.25em)) rotate(-0.35deg);
+  transform: translate(calc(-50% + 0.05em), calc(-50% - 1em)) rotate(-0.35deg);
 }
 
 .magic-bento .magic-bento-card__invoice-header-top {
@@ -241,10 +253,56 @@
   overflow: hidden;
   pointer-events: none;
   transform: translate(-50%, -50%);
+  border-radius: 0.55em;
   background-image: url(../fastwork-card.png);
   background-repeat: no-repeat;
   background-position: center top;
   background-size: 100% auto;
+}
+
+.magic-bento .magic-bento-card__fastwork-card::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  left: 0;
+  width: 50%;
+  height: 150%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 70%,
+    transparent 100%
+  );
+  transform: translateX(-170%) rotate(22deg);
+  transform-origin: center center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.magic-bento .magic-bento-card:has(.magic-bento-card__fastwork-card):hover .magic-bento-card__fastwork-card::after {
+  animation: magic-bento-fastwork-card-shine 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes magic-bento-fastwork-card-shine {
+  0% {
+    transform: translateX(-170%) rotate(22deg);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 1;
+  }
+
+  88% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(240%) rotate(22deg);
+    opacity: 0;
+  }
 }
 
 .magic-bento .magic-bento-card__label {
@@ -311,20 +369,39 @@
     grid-template-columns: 1fr;
     width: 100%;
     padding: 0;
+    font-size: max(0.9375rem, 15px);
   }
 
   .magic-bento .magic-bento-card {
-    min-height: 150px;
-  }
-
-  .magic-bento .card-grid--four .magic-bento-card--compact {
     aspect-ratio: auto;
-    min-height: 140px;
+    min-height: 176px;
+    padding: 1.25em;
   }
 
+  .magic-bento .card-grid--four .magic-bento-card,
+  .magic-bento .card-grid--four .magic-bento-card--compact,
   .magic-bento .card-grid--four .magic-bento-card--large {
     aspect-ratio: auto;
-    min-height: 188px;
+    height: 176px;
+    min-height: 176px;
+    max-height: 176px;
+  }
+
+  .magic-bento .magic-bento-card__invoice-term {
+    font-size: max(0.72em, 12px);
+  }
+
+  .magic-bento .magic-bento-card__invoice-no {
+    font-size: max(0.68em, 11px);
+  }
+
+  .magic-bento .magic-bento-card__fastwork-card {
+    width: min(58%, 12.5em);
+    top: 72%;
+  }
+
+  .magic-bento .magic-bento-card__invoice-stack {
+    width: min(78%, 16em);
   }
 }
 
@@ -392,7 +469,7 @@
   mask-composite: exclude;
   pointer-events: none;
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.55s ease;
   z-index: 1;
 }
 
@@ -437,6 +514,20 @@
   .magic-bento .magic-bento-card:has(.magic-bento-card__invoice-stack):hover .magic-bento-card__invoice-header--mid {
     transform: none;
     opacity: 1;
+  }
+
+  .magic-bento .magic-bento-card__bank-logo--card {
+    transition: none;
+  }
+
+  .magic-bento .magic-bento-card:has(.magic-bento-card__bank-logos--cards):hover .magic-bento-card__bank-logo--card:first-child,
+  .magic-bento .magic-bento-card:has(.magic-bento-card__bank-logos--cards):hover .magic-bento-card__bank-logo--card:last-child {
+    transform: none;
+  }
+
+  .magic-bento .magic-bento-card:has(.magic-bento-card__fastwork-card):hover .magic-bento-card__fastwork-card::after {
+    animation: none;
+    opacity: 0;
   }
 
   .magic-bento .magic-bento-card__bank-marquee-track {

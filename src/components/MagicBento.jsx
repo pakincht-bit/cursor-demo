@@ -470,6 +470,8 @@ function StaticBentoCard({
   shouldDisableAnimations,
   enableTilt,
   enableMagnetism,
+  enableBorderGlow,
+  glowRadius,
   clickEffect,
   glowColor
 }) {
@@ -485,6 +487,21 @@ function StaticBentoCard({
         const y = e.clientY - rect.top;
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
+
+        if (enableBorderGlow) {
+          const relativeX = ((e.clientX - rect.left) / rect.width) * 100;
+          const relativeY = ((e.clientY - rect.top) / rect.height) * 100;
+
+          gsap.to(el, {
+            '--glow-x': `${relativeX}%`,
+            '--glow-y': `${relativeY}%`,
+            '--glow-intensity': 1,
+            '--glow-radius': `${glowRadius}px`,
+            duration: 0.55,
+            ease: 'power3.out',
+            overwrite: 'auto'
+          });
+        }
 
         if (enableTilt) {
           const rotateX = ((y - centerY) / centerY) * -10;
@@ -512,6 +529,14 @@ function StaticBentoCard({
 
       const handleMouseLeave = () => {
         if (shouldDisableAnimations) return;
+
+        if (enableBorderGlow) {
+          gsap.to(el, {
+            '--glow-intensity': 0,
+            duration: 0.65,
+            ease: 'power2.inOut'
+          });
+        }
 
         if (enableTilt) {
           gsap.to(el, {
@@ -578,7 +603,7 @@ function StaticBentoCard({
       el.addEventListener('mouseleave', handleMouseLeave);
       el.addEventListener('click', handleClick);
     },
-    [shouldDisableAnimations, enableTilt, enableMagnetism, clickEffect, glowColor]
+    [shouldDisableAnimations, enableTilt, enableMagnetism, enableBorderGlow, glowRadius, clickEffect, glowColor]
   );
 
   return (
@@ -665,6 +690,8 @@ const MagicBento = ({
               shouldDisableAnimations={shouldDisableAnimations}
               enableTilt={enableTilt}
               enableMagnetism={enableMagnetism}
+              enableBorderGlow={enableBorderGlow}
+              glowRadius={spotlightRadius}
               clickEffect={clickEffect}
               glowColor={glowColor}
             />

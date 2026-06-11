@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Momo+Signature&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=132" />
+  <link rel="stylesheet" href="styles.css?v=134" />
   <link rel="stylesheet" href="assets/story-stack/story-stack.css" />
 </head>
 <body>
@@ -19,7 +19,7 @@
         <img src="assets/Logo-black.svg" alt="fastwork" class="nav__logo-img" />
       </a>
       <nav class="nav__links" aria-label="Main">
-        <a href="#structure-tabs" class="nav__link">Features</a>
+        <a href="#story-stack" class="nav__link">Features</a>
         <a href="#tiers" class="nav__link">Package</a>
         <a href="#testimonials" class="nav__link">Customers</a>
         <a href="#faq" class="nav__link">FAQ</a>
@@ -27,11 +27,31 @@
       <div class="nav__actions">
         <a href="#footer" class="btn btn--primary btn--pill btn--nav">Start for free</a>
       </div>
-      <button class="nav__menu-btn" aria-label="Open menu">
+      <button
+        class="nav__menu-btn"
+        type="button"
+        id="navMenuBtn"
+        aria-label="Open menu"
+        aria-expanded="false"
+        aria-controls="navDrawer"
+      >
         <span></span><span></span>
       </button>
     </div>
   </header>
+
+  <div class="nav-drawer" id="navDrawer" hidden>
+    <div class="nav-drawer__backdrop" data-nav-close tabindex="-1" aria-hidden="true"></div>
+    <div class="nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Site navigation">
+      <nav class="nav-drawer__links" aria-label="Main">
+        <a href="#story-stack" class="nav-drawer__link">Features</a>
+        <a href="#tiers" class="nav-drawer__link">Package</a>
+        <a href="#testimonials" class="nav-drawer__link">Customers</a>
+        <a href="#faq" class="nav-drawer__link">FAQ</a>
+      </nav>
+      <a href="#footer" class="btn btn--primary btn--pill nav-drawer__cta">Start for free</a>
+    </div>
+  </div>
 
   <main>
     <!-- Hero -->
@@ -43,7 +63,7 @@
         <div class="hero__content">
           <img src="assets/Logo-white.svg" alt="fastwork" class="hero__logo" width="184" height="48" />
           <h1 class="hero__title">
-            Run all your <span class="hero__title-accent">businesses</span><br />from one place.
+            Find a <span class="hero__title-accent">human</span> for your businesses
           </h1>
           <p class="hero__subtitle">
             Create multi-business profiles and manage every payment method in a single platform — so you can run your businesses with ease.
@@ -76,170 +96,6 @@
     <section class="story-stack-section" id="story-stack" aria-label="The problem">
       <div class="container story-stack-section__inner">
         <div id="story-stack-root"></div>
-      </div>
-    </section>
-
-    <!-- Platform features -->
-    <section class="features-included" id="structure-tabs" aria-label="Platform features">
-      <div class="container features-included__inner">
-        <div class="features-included__layout">
-          <div class="features-included__steps">
-            <article class="features-included__step is-active" data-feature-index="0" aria-current="step">
-              <div class="features-included__step-visual">
-                <div class="features-included__card">
-                  <img
-                    class="features-included__image"
-                    src="assets/background-color-01.jpg"
-                    alt="Workspace dashboard showing multiple business profiles managed side by side"
-                    width="4113"
-                    height="2700"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </div>
-              <div class="features-included__copy">
-                <h3 class="features-included__title">Every business, one workspace</h3>
-                <p class="features-included__desc">Stop editing business details every time you switch companies. Set up a profile per business — your whole team invoices under the right entity, side by side, from one login.</p>
-                <ul class="features-included__bullets features-included__bullets--numbered">
-                  <li>
-                    <span class="features-included__number" aria-hidden="true"></span>
-                    <span><strong>Set up a team</strong><br>Create your team in 30 seconds. No payment required.</span>
-                  </li>
-                  <li>
-                    <span class="features-included__number" aria-hidden="true"></span>
-                    <span><strong>Invite your members</strong><br>Add teammates by email. Set roles and spending limits.</span>
-                  </li>
-                  <li>
-                    <span class="features-included__number" aria-hidden="true"></span>
-                    <span><strong>Register your business</strong><br>Tax ID lookup auto-fills your details. Once, for every future hire.</span>
-                  </li>
-                </ul>
-              </div>
-            </article>
-
-            <article class="features-included__step" data-feature-index="1">
-              <div class="features-included__step-visual">
-                <div class="features-included__card">
-                  <img
-                    class="features-included__image"
-                    src="assets/background-color-02.jpg"
-                    alt="Payment methods panel with bank transfer, QR PromptPay, credit card, and pre-paid credit options"
-                    width="4113"
-                    height="2700"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </div>
-              <div class="features-included__copy">
-                <h3 class="features-included__title">All your payment methods, fully in control</h3>
-                <p class="features-included__desc">Fund work from the company, not personal pockets. Teammates pay through the business profile — bank transfer, QR PromptPay, credit card, or pre-paid credit — without fronting spend and chasing reimbursement.</p>
-                <ul class="features-included__bullets">
-                  <li>
-                    <span class="features-included__check" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-                    </span>
-                    <span><strong>Bank transfer</strong><br>Pay directly from your registered business bank account.</span>
-                  </li>
-                  <li>
-                    <span class="features-included__check" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-                    </span>
-                    <span><strong>QR PromptPay</strong><br>Scan and pay instantly with Thailand's national QR standard.</span>
-                  </li>
-                  <li>
-                    <span class="features-included__check" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-                    </span>
-                    <span><strong>Credit card</strong><br>Use Visa, Mastercard, and other major cards.</span>
-                  </li>
-                  <li>
-                    <span class="features-included__check" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-                    </span>
-                    <span><strong>Pre-paid credit</strong><br>Top up wallet balance and pay from available credit.</span>
-                  </li>
-                </ul>
-              </div>
-            </article>
-
-            <article class="features-included__step" data-feature-index="2">
-              <div class="features-included__step-visual">
-                <div class="features-included__card">
-                  <img
-                    class="features-included__image"
-                    src="assets/background-color-03.jpg"
-                    alt="Documents library with invoices, quotations, and monthly statements in one place"
-                    width="4113"
-                    height="2700"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-              </div>
-              <div class="features-included__copy">
-                <h3 class="features-included__title">Get docs back, auto</h3>
-                <p class="features-included__desc">No more collecting receipts for the owner to review. Invoices, quotations, and monthly statements land in one place — ready when finance needs them.</p>
-                <ul class="features-included__bullets">
-                  <li>
-                    <span class="features-included__check" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-                    </span>
-                    <span><strong>Invoices</strong><br>Download tax invoices for every transaction, ready for filing.</span>
-                  </li>
-                  <li>
-                    <span class="features-included__check" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-                    </span>
-                    <span><strong>Quotations</strong><br>Pull approved quotes anytime — no digging through email.</span>
-                  </li>
-                  <li>
-                    <span class="features-included__check" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-                    </span>
-                    <span><strong>Monthly statements</strong><br>One consolidated statement per company, every month.</span>
-                  </li>
-                </ul>
-              </div>
-            </article>
-          </div>
-
-          <div class="features-included__sticky">
-            <div class="features-included__card features-included__media-stack">
-              <img
-                class="features-included__image is-active"
-                data-feature-index="0"
-                src="assets/background-color-01.jpg"
-                alt=""
-                width="4113"
-                height="2700"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                class="features-included__image"
-                data-feature-index="1"
-                src="assets/background-color-02.jpg"
-                alt=""
-                width="4113"
-                height="2700"
-                loading="lazy"
-                decoding="async"
-              />
-              <img
-                class="features-included__image"
-                data-feature-index="2"
-                src="assets/background-color-03.jpg"
-                alt=""
-                width="4113"
-                height="2700"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -479,66 +335,58 @@
           </a>
         </div>
 
-        <nav class="footer__col" aria-label="Fastwork">
-          <h3 class="footer__heading">Fastwork</h3>
+        <nav class="footer__col" aria-label="หมวดหมู่งาน">
+          <h3 class="footer__heading footer__heading--th">หมวดหมู่งาน</h3>
           <ul class="footer__links">
-            <li><a href="#hero">home</a></li>
-            <li><a href="#tiers">pricing</a></li>
-            <li><a href="#">downloads</a></li>
-            <li><a href="#">changelog</a></li>
+            <li><a href="#">ผู้เชี่ยวชาญ AI</a></li>
+            <li><a href="#">โฆษณาการตลาด</a></li>
+            <li><a href="#">ออกแบบและ กราฟิก</a></li>
+            <li><a href="#">ทำแอปเว็บไซต์</a></li>
+            <li><a href="#">ไลฟ์สไตล์</a></li>
+            <li><a href="#">ภาพ เสียงและโปรดักชัน</a></li>
+            <li><a href="#">ทนาย บัญชีและที่ปรึกษา</a></li>
           </ul>
         </nav>
 
-        <nav class="footer__col" aria-label="Tools">
-          <h3 class="footer__heading">Tools</h3>
+        <nav class="footer__col" aria-label="วิธีการใช้งาน">
+          <h3 class="footer__heading footer__heading--th">วิธีการใช้งาน</h3>
           <ul class="footer__links">
-            <li><a href="#">Fastwork Web</a></li>
-            <li><a href="#">Fastwork Desktop</a></li>
-            <li><a href="#">Fastwork MCP</a></li>
-            <li><a href="#">Fastwork Snapshot</a></li>
-            <li><a href="#">Fastwork Shaders</a></li>
+            <li><a href="#">สมัครเป็นฟรีแลนซ์</a></li>
+            <li><a href="#">เริ่มขายงานอย่างไร</a></li>
+            <li><a href="#">การชำระค่าจ้าง</a></li>
+            <li><a href="#">รับประกันการจ้างงาน</a></li>
+            <li><a href="#">บล็อกความรู้</a></li>
+            <li><a href="#">คำถามที่พบบ่อย</a></li>
+            <li><a href="#">จัดการการใช้ข้อมูล</a></li>
           </ul>
         </nav>
 
-        <nav class="footer__col" aria-label="Community">
-          <h3 class="footer__heading">Community</h3>
+        <nav class="footer__col" aria-label="ผลิตภัณฑ์">
+          <h3 class="footer__heading footer__heading--th">ผลิตภัณฑ์</h3>
           <ul class="footer__links">
-            <li><a href="#">twitter</a></li>
-            <li><a href="#">discord</a></li>
-            <li><a href="#">slack</a></li>
-            <li><a href="#">reddit</a></li>
-            <li><a href="#">youtube</a></li>
+            <li><a href="#hero">Fastwork</a></li>
+            <li><a href="#tiers">Fastwork for Business</a></li>
           </ul>
         </nav>
 
-        <nav class="footer__col" aria-label="Resources">
-          <h3 class="footer__heading">Resources</h3>
+        <nav class="footer__col" aria-label="เกี่ยวกับ fastwork">
+          <h3 class="footer__heading footer__heading--th">เกี่ยวกับ fastwork</h3>
           <ul class="footer__links">
-            <li><a href="#">docs</a></li>
-            <li><a href="#">blog</a></li>
-            <li><a href="#">roadmap</a></li>
-          </ul>
-          <h3 class="footer__heading footer__heading--sub">Compare</h3>
-          <ul class="footer__links">
-            <li><a href="#">Fastwork vs Figma</a></li>
-            <li><a href="#">Fastwork vs Pencil</a></li>
-          </ul>
-        </nav>
-
-        <nav class="footer__col" aria-label="Legal">
-          <h3 class="footer__heading">Legal</h3>
-          <ul class="footer__links">
-            <li><a href="#">privacy</a></li>
-            <li><a href="#">terms</a></li>
-            <li><a href="#">dpa</a></li>
-            <li><a href="#">subprocessors</a></li>
+            <li><a href="#">Feedback พวกเรา</a></li>
+            <li><a href="#">ร่วมงานกับ Fastwork</a></li>
+            <li><a href="#">เงื่อนไขการใช้บริการ</a></li>
+            <li><a href="#">นโยบายความเป็นส่วนตัว</a></li>
           </ul>
         </nav>
       </div>
 
       <div class="footer__bottom">
         <span class="footer__copyright">© 2026</span>
-        <a href="mailto:team@fastwork.com" class="footer__email">team@fastwork.com</a>
+        <div class="footer__bottom-meta">
+          <a href="mailto:support@fastwork.co" class="footer__email">support@fastwork.co</a>
+          <span class="footer__hours">จันทร์-ศุกร์ 9.30-22.00น.</span>
+          <span class="footer__hours">เสาร์-อาทิตย์, วันหยุดนักขัตฤกษ์ 10.00-19.00น.</span>
+        </div>
       </div>
     </div>
   </footer>
@@ -575,6 +423,6 @@
   </div>
 
   <script type="module" src="assets/story-stack/story-stack.js"></script>
-  <script type="module" src="script.js?v=34"></script>
+  <script type="module" src="script.js?v=35"></script>
 </body>
 </html>

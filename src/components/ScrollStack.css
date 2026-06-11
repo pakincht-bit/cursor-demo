@@ -33,6 +33,16 @@ html.lenis-smooth {
   padding: 0 0 32vh;
 }
 
+@media (max-width: 768px) {
+  .scroll-stack-scroller--window .scroll-stack-inner {
+    padding-bottom: 12vh;
+  }
+
+  .scroll-stack-card.story-scene--payment-bento {
+    margin-bottom: clamp(48px, 10vw, 80px) !important;
+  }
+}
+
 .scroll-stack-card {
   transform-origin: center top;
   will-change: transform, opacity;
