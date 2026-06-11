@@ -46,15 +46,6 @@ const GALLERY_STACK = {
   itemStackDistance: 180
 };
 
-const TEAM_AVATARS = [
-  { id: 'jd', initials: 'JD', image: 'assets/background-color-01.jpg', position: 1 },
-  { id: 'sa', initials: 'SA', image: 'assets/background-color-02.jpg', position: 2 },
-  { id: 'mk', initials: 'MK', gradient: 'linear-gradient(135deg, #84b5ff, #0569ff)', position: 3 },
-  { id: 'pl', initials: 'PL', image: 'assets/background-color-03.jpg', position: 4 },
-  { id: 'an', initials: 'AN', gradient: 'linear-gradient(135deg, #ae8eff, #8565ff)', position: 5 },
-  { id: 'rw', initials: 'RW', gradient: 'linear-gradient(135deg, #ffcca5, #ffb508)', position: 6 }
-];
-
 function getDocumentOffsetTop(element) {
   let top = 0;
   let el = element;
@@ -392,83 +383,43 @@ function SceneHeadline({ scene }) {
   );
 }
 
-function TeamAvatar({ member }) {
-  const style = member.image
-    ? { backgroundImage: `url(${member.image})` }
-    : { background: member.gradient };
+const TEAM_MEMBERS = [
+  { id: 'mina', name: 'Mina', color: '#0569FF', position: 1 },
+  { id: 'kai', name: 'Kai', color: '#AE8EFF', position: 2 },
+  { id: 'anna', name: 'Anna', color: '#FFB780', position: 3 },
+  { id: 'ryan', name: 'Ryan', color: '#6FA8FF', position: 4 },
+  { id: 'nira', name: 'Nira', color: '#0569FF', position: 5 },
+  { id: 'theo', name: 'Theo', color: '#AE8EFF', position: 6 }
+];
 
+function TeamMemberBadge({ member }) {
   return (
     <div
-      className={`story-scene__team-avatar story-scene__team-avatar--${member.position}`}
-      style={style}
-      aria-hidden="true"
+      className={`story-scene__team-badge story-scene__team-badge--${member.position}`}
+      style={{ backgroundColor: member.color }}
+      role="listitem"
     >
-      {!member.image ? <span>{member.initials}</span> : null}
+      <span className="story-scene__team-badge-name">{member.name}</span>
     </div>
   );
 }
 
 function TeamPlatformVisual() {
   return (
-    <div className="story-scene__teams-stage" aria-hidden="true">
-      {TEAM_AVATARS.map(member => (
-        <TeamAvatar key={member.id} member={member} />
-      ))}
-
-      <div className="story-scene__platform">
-        <div className="story-scene__platform-chrome">
-          <span className="story-scene__platform-dot story-scene__platform-dot--red" />
-          <span className="story-scene__platform-dot story-scene__platform-dot--amber" />
-          <span className="story-scene__platform-dot story-scene__platform-dot--green" />
-          <span className="story-scene__platform-url">app.fastwork.co/team</span>
-        </div>
-
-        <div className="story-scene__platform-body">
-          <aside className="story-scene__platform-sidebar">
-            <p className="story-scene__platform-sidebar-label">Workspace</p>
-            <div className="story-scene__platform-nav-item story-scene__platform-nav-item--active">
-              <span className="story-scene__platform-nav-icon" />
-              Team
-            </div>
-            <div className="story-scene__platform-nav-item">
-              <span className="story-scene__platform-nav-icon" />
-              Projects
-            </div>
-            <div className="story-scene__platform-nav-item">
-              <span className="story-scene__platform-nav-icon" />
-              Payments
-            </div>
-            <div className="story-scene__platform-nav-item">
-              <span className="story-scene__platform-nav-icon" />
-              Documents
-            </div>
-          </aside>
-
-          <div className="story-scene__platform-main">
-            <div className="story-scene__platform-header">
-              <div>
-                <p className="story-scene__platform-context">Acme Co. · Team workspace</p>
-                <p className="story-scene__platform-title">Shared hiring dashboard</p>
-              </div>
-              <span className="story-scene__platform-badge">
-                <span className="story-scene__platform-badge-dot" />
-                6 members
-              </span>
-            </div>
-
-            <div className="story-scene__platform-cards">
-              <div className="story-scene__platform-card">
-                <span className="story-scene__platform-card-label">Active project</span>
-                <span className="story-scene__platform-card-line" />
-                <span className="story-scene__platform-card-line story-scene__platform-card-line--short" />
-              </div>
-              <div className="story-scene__platform-card">
-                <span className="story-scene__platform-card-label">Team wallet</span>
-                <span className="story-scene__platform-card-line story-scene__platform-card-line--medium" />
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="story-scene__teams-stage">
+      <img
+        className="story-scene__teams-mockup"
+        src="assets/ui-platform.png"
+        alt="fastwork for business team dashboard with setup steps, members, credits, and transactions"
+        width={2277}
+        height={1417}
+        loading="lazy"
+        decoding="async"
+      />
+      <div className="story-scene__team-badges" role="list" aria-label="Team members">
+        {TEAM_MEMBERS.map(member => (
+          <TeamMemberBadge key={member.id} member={member} />
+        ))}
       </div>
     </div>
   );
@@ -520,14 +471,10 @@ function FreelancerGallery({ scene }) {
           ref={galleryRef}
           items={FREELANCER_GALLERY_ITEMS}
           bend={3.5}
-          textColor="#ffffff"
           borderRadius={0.05}
           scrollEase={0.06}
           interactive={false}
           scrollLinked
-          labelInside
-          font="500 15px Instrument Sans"
-          fontUrl="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500&display=swap"
         />
       </div>
     </>

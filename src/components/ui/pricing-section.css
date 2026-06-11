@@ -28,7 +28,7 @@
   width: 100%;
   padding: 0 0 80px;
   scroll-margin-top: 48px;
-  font-family: "Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--foreground);
   background: var(--bg-card, #fff);
 }
@@ -96,6 +96,32 @@
 
 .pricing-section__plan-spacer {
   display: none;
+}
+
+.pricing-section__plan-toggle {
+  display: none;
+}
+
+.pricing-section__plan-toggle-btn {
+  flex: 1;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: var(--text-muted, #525252);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pricing-section__plan-toggle-btn--active {
+  background: var(--bg-card, #fff);
+  color: var(--text, #0a0a0a);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .pricing-section__plan-col {
@@ -336,57 +362,106 @@
 
 @media (max-width: 1023px) {
   .pricing-section {
-    padding: 0 0 64px;
+    padding: 0 0 calc(64px + var(--nav-bottom-offset, 0px));
+  }
+
+  .pricing-section__plan-toggle {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    padding: 4px;
+    border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+    border-radius: 9999px;
+    background: var(--bg-elevated, #f4f4f5);
+  }
+
+  .pricing-section[data-active-plan="business"] .pricing-section__plan-col[data-plan="enterprise"],
+  .pricing-section[data-active-plan="enterprise"] .pricing-section__plan-col[data-plan="business"] {
+    display: none;
+  }
+
+  .pricing-section[data-active-plan="business"] .pricing-section__feature-cell[data-plan="enterprise"],
+  .pricing-section[data-active-plan="enterprise"] .pricing-section__feature-cell[data-plan="business"] {
+    display: none;
   }
 
   .pricing-section__table {
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    overflow: visible;
+    border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+    border-radius: var(--radius-lg, 16px);
+    background: var(--bg-card, #fff);
+    overflow: hidden;
   }
 
   .pricing-section__plans {
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 0;
   }
 
   .pricing-section__plan-col {
-    border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
-    border-radius: var(--radius-lg, 16px);
-    background: var(--bg-card, #fff);
-    border-left: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    border-left: none;
+    box-shadow: none;
+  }
+
+  .pricing-section__recommended::before {
+    display: none;
   }
 
   .pricing-section__features {
-    margin-top: 8px;
-    border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
-    border-radius: var(--radius-lg, 16px);
+    margin-top: 0;
+    border: none;
+    border-radius: 0;
+    border-top: none;
     overflow: hidden;
-    background: var(--bg-card, #fff);
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .pricing-section__feature-row:first-child {
+    border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
   }
 
   .pricing-section__feature-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 8px 12px;
+    align-items: center;
   }
 
   .pricing-section__feature-name {
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+    padding: 14px 0 14px 16px;
+    border-bottom: none;
+    align-items: flex-start;
   }
 
   .pricing-section__feature-values {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: block;
   }
 
   .pricing-section__feature-cell {
     border-left: none;
-    border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
-    padding: 12px 16px;
+    border-top: none;
+    padding: 14px 16px 14px 0;
+    justify-content: flex-end;
+    align-items: center;
   }
 
-  .pricing-section__feature-cell:first-child {
-    border-right: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+  .pricing-section__feature-cell:has(.pricing-section__feature-list) {
+    align-items: flex-start;
+  }
+
+  .pricing-section__feature-value {
+    text-align: right;
+  }
+
+  .pricing-section__feature-list {
+    text-align: right;
+    padding-left: 0;
+    list-style-position: inside;
+  }
+
+  .pricing-section__feature-row:has(.pricing-section__feature-sublist) {
+    align-items: start;
   }
 }

@@ -28,6 +28,52 @@ const DEFAULT_FONT = 'bold 30px Figtree';
 const DEFAULT_FONT_URL =
   'https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap';
 
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function drawCover(ctx, img, width, height) {
+  const imgAspect = img.naturalWidth / img.naturalHeight;
+  const canvasAspect = width / height;
+  let drawWidth;
+  let drawHeight;
+  let offsetX;
+  let offsetY;
+
+  if (imgAspect > canvasAspect) {
+    drawHeight = height;
+    drawWidth = height * imgAspect;
+    offsetX = (width - drawWidth) / 2;
+    offsetY = 0;
+  } else {
+    drawWidth = width;
+    drawHeight = width / imgAspect;
+    offsetX = 0;
+    offsetY = (height - drawHeight) / 2;
+  }
+
+  ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+}
+
+async function createLayeredCardImage(bgSrc, overlaySrc) {
+  const [bg, overlay] = await Promise.all([loadImage(bgSrc), loadImage(overlaySrc)]);
+  const width = bg.naturalWidth;
+  const height = bg.naturalHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  drawCover(ctx, bg, width, height);
+  drawCover(ctx, overlay, width, height);
+  return canvas;
+}
+
 function deriveFontFamilyFromUrl(url) {
   const fileName = (url.split('/').pop() || 'custom-font').split('?')[0];
   const base = fileName.replace(/\.(woff2?|ttf|otf|eot)$/i, '');
@@ -242,11 +288,44 @@ class Title {
   }
 }
 
+const ROUNDED_IMAGE_FRAGMENT = `
+  precision highp float;
+  uniform vec2 uImageSizes;
+  uniform vec2 uPlaneSizes;
+  uniform sampler2D tMap;
+  uniform float uBorderRadius;
+  varying vec2 vUv;
+  
+  float roundedBoxSDF(vec2 p, vec2 b, float r) {
+    vec2 d = abs(p) - b;
+    return length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0) - r;
+  }
+  
+  void main() {
+    vec2 ratio = vec2(
+      min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
+      min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
+    );
+    vec2 uv = vec2(
+      vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
+      vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
+    );
+    vec4 color = texture2D(tMap, uv);
+    
+    float d = roundedBoxSDF(vUv - 0.5, vec2(0.5 - uBorderRadius), uBorderRadius);
+    float edgeSmooth = 0.002;
+    float alpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, d);
+    
+    gl_FragColor = vec4(color.rgb, alpha);
+  }
+`;
+
 class Media {
   constructor({
     geometry,
     gl,
     image,
+    overlayImage,
     index,
     length,
     renderer,
@@ -265,6 +344,7 @@ class Media {
     this.geometry = geometry;
     this.gl = gl;
     this.image = image;
+    this.overlayImage = overlayImage;
     this.index = index;
     this.length = length;
     this.renderer = renderer;
@@ -306,37 +386,7 @@ class Media {
           gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
         }
       `,
-      fragment: `
-        precision highp float;
-        uniform vec2 uImageSizes;
-        uniform vec2 uPlaneSizes;
-        uniform sampler2D tMap;
-        uniform float uBorderRadius;
-        varying vec2 vUv;
-        
-        float roundedBoxSDF(vec2 p, vec2 b, float r) {
-          vec2 d = abs(p) - b;
-          return length(max(d, vec2(0.0))) + min(max(d.x, d.y), 0.0) - r;
-        }
-        
-        void main() {
-          vec2 ratio = vec2(
-            min((uPlaneSizes.x / uPlaneSizes.y) / (uImageSizes.x / uImageSizes.y), 1.0),
-            min((uPlaneSizes.y / uPlaneSizes.x) / (uImageSizes.y / uImageSizes.x), 1.0)
-          );
-          vec2 uv = vec2(
-            vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
-            vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
-          );
-          vec4 color = texture2D(tMap, uv);
-          
-          float d = roundedBoxSDF(vUv - 0.5, vec2(0.5 - uBorderRadius), uBorderRadius);
-          float edgeSmooth = 0.002;
-          float alpha = 1.0 - smoothstep(-edgeSmooth, edgeSmooth, d);
-          
-          gl_FragColor = vec4(color.rgb, alpha);
-        }
-      `,
+      fragment: ROUNDED_IMAGE_FRAGMENT,
       uniforms: {
         tMap: { value: texture },
         uPlaneSizes: { value: [0, 0] },
@@ -347,13 +397,21 @@ class Media {
       },
       transparent: true
     });
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = this.image;
-    img.onload = () => {
-      texture.image = img;
-      this.program.uniforms.uImageSizes.value = [img.naturalWidth, img.naturalHeight];
+    const applyTexture = image => {
+      texture.image = image;
+      this.program.uniforms.uImageSizes.value = [
+        image.naturalWidth || image.width,
+        image.naturalHeight || image.height
+      ];
     };
+
+    const loadCardImage = this.overlayImage
+      ? createLayeredCardImage(this.image, this.overlayImage)
+      : loadImage(this.image);
+
+    loadCardImage.then(applyTexture).catch(() => {
+      loadImage(this.image).then(applyTexture).catch(() => {});
+    });
   }
   createMesh() {
     this.plane = new Mesh(this.gl, {
@@ -363,6 +421,8 @@ class Media {
     this.plane.setParent(this.scene);
   }
   createTitle() {
+    if (!this.text) return;
+
     this.title = new Title({
       gl: this.gl,
       plane: this.plane,
@@ -536,6 +596,7 @@ class App {
         geometry: this.planeGeometry,
         gl: this.gl,
         image: data.image,
+        overlayImage: data.overlay,
         index,
         length: this.mediasImages.length,
         renderer: this.renderer,

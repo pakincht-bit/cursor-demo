@@ -55,7 +55,8 @@ html.lenis-smooth {
   margin-right: calc(50% - 50vw);
 }
 
-.scroll-stack-card.story-scene--gallery {
+.scroll-stack-card.story-scene--gallery,
+.scroll-stack-card.story-scene--teams {
   overflow: visible;
 }
 

@@ -46,73 +46,6 @@ import { initAurora } from "./aurora.js";
   updateNav(true);
 })();
 
-(function initMobileNav() {
-  const menuBtn = document.getElementById("navMenuBtn");
-  const drawer = document.getElementById("navDrawer");
-  if (!menuBtn || !drawer) return;
-
-  const panel = drawer.querySelector(".nav-drawer__panel");
-  const closeTargets = drawer.querySelectorAll("[data-nav-close], .nav-drawer__link, .nav-drawer__cta");
-  let previousFocus = null;
-
-  function openDrawer() {
-    previousFocus = document.activeElement;
-    drawer.hidden = false;
-    requestAnimationFrame(() => {
-      drawer.classList.add("is-open");
-    });
-    menuBtn.setAttribute("aria-expanded", "true");
-    menuBtn.setAttribute("aria-label", "Close menu");
-    document.body.classList.add("is-nav-drawer-open");
-    drawer.querySelector(".nav-drawer__link")?.focus();
-    document.addEventListener("keydown", onKeydown);
-  }
-
-  function closeDrawer() {
-    drawer.classList.remove("is-open");
-    menuBtn.setAttribute("aria-expanded", "false");
-    menuBtn.setAttribute("aria-label", "Open menu");
-    document.body.classList.remove("is-nav-drawer-open");
-    document.removeEventListener("keydown", onKeydown);
-
-    window.setTimeout(() => {
-      if (!drawer.classList.contains("is-open")) {
-        drawer.hidden = true;
-      }
-    }, 320);
-
-    if (previousFocus && typeof previousFocus.focus === "function") {
-      previousFocus.focus();
-    }
-    previousFocus = null;
-  }
-
-  function onKeydown(event) {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeDrawer();
-    }
-  }
-
-  menuBtn.addEventListener("click", () => {
-    if (drawer.classList.contains("is-open")) {
-      closeDrawer();
-    } else {
-      openDrawer();
-    }
-  });
-
-  closeTargets.forEach((target) => {
-    target.addEventListener("click", closeDrawer);
-  });
-
-  drawer.querySelector(".nav-drawer__backdrop")?.addEventListener("click", closeDrawer);
-
-  panel?.addEventListener("click", (event) => {
-    event.stopPropagation();
-  });
-})();
-
 const faqTriggers = document.querySelectorAll(".faq__trigger");
 
 function closeFaqItem(trigger) {
@@ -433,60 +366,6 @@ testimonialCards.forEach((card) => {
   );
 
   targets.forEach((target) => observer.observe(target));
-})();
-
-(function initFooterReveal() {
-  const siteFooter = document.getElementById("site-footer");
-  if (!siteFooter) return;
-
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  let footerHeight = 0;
-  let revealStart = 0;
-  let ticking = false;
-
-  function updateFooterHeight() {
-    footerHeight = siteFooter.offsetHeight;
-    document.documentElement.style.setProperty("--site-footer-height", `${footerHeight}px`);
-    revealStart = Math.max(
-      0,
-      document.documentElement.scrollHeight - window.innerHeight - footerHeight
-    );
-    updateFooterOffset();
-  }
-
-  function updateFooterOffset() {
-    ticking = false;
-    const overflow = footerHeight - window.innerHeight;
-    if (overflow <= 0 || reducedMotion.matches) {
-      siteFooter.style.transform = overflow > 0 && reducedMotion.matches
-        ? `translateY(${overflow}px)`
-        : "";
-      return;
-    }
-
-    const progress = Math.min(
-      Math.max((window.scrollY - revealStart) / footerHeight, 0),
-      1
-    );
-    siteFooter.style.transform = `translateY(${overflow * progress}px)`;
-  }
-
-  function onScroll() {
-    if (ticking || footerHeight <= window.innerHeight) return;
-    ticking = true;
-    requestAnimationFrame(updateFooterOffset);
-  }
-
-  updateFooterHeight();
-
-  if (typeof ResizeObserver !== "undefined") {
-    const observer = new ResizeObserver(updateFooterHeight);
-    observer.observe(siteFooter);
-  }
-
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", updateFooterHeight, { passive: true });
-  reducedMotion.addEventListener("change", updateFooterOffset);
 })();
 
 (function initFeaturesScroll() {
