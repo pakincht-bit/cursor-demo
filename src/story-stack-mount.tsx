@@ -12,8 +12,8 @@ if (heroBlurMount) {
       <GradualBlur
         target="parent"
         position="bottom"
-        height="12rem"
-        tabletHeight="7rem"
+        height="8rem"
+        tabletHeight="6rem"
         mobileHeight="4rem"
         responsive
         strength={2}

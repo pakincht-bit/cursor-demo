@@ -40,6 +40,7 @@
   --hero-section-fade: clamp(56px, 7vw, 80px);
   --hero-aurora-extend: 32%;
   --hero-media-crop: clamp(20px, 3.5vw, 48px);
+  --hero-media-fade: clamp(96px, 18vw, 220px);
   --hero-parallax-max: 40px;
   --nav-bottom-height: calc(56px + max(16px, env(safe-area-inset-bottom, 0px)));
   --nav-bottom-offset: 0px;
@@ -52,6 +53,7 @@
   --hero-intro-aurora-delay: 1200ms;
   --hero-intro-video-delay: 1200ms;
   --footer-bg: #1a1f2e;
+  --footer-bg-rgb: 26, 31, 46;
   --site-footer-height: 520px;
 }
 
@@ -91,7 +93,7 @@ html {
 }
 
 body {
-  font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "IBM Plex Sans", "IBM Plex Sans Thai", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
@@ -387,8 +389,10 @@ button {
 
 .hero--wayflyer {
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   z-index: 0;
+  height: fit-content;
+  min-height: 0;
   background: var(--footer-bg);
   padding-top: 0;
   padding-bottom: 0;
@@ -405,9 +409,7 @@ button {
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.28) 28%,
-    rgba(255, 255, 255, 0.78) 62%,
+    rgba(var(--footer-bg-rgb), 0) 0%,
     var(--bg-card, #fff) 100%
   );
 }
@@ -417,21 +419,9 @@ button {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 12rem;
+  height: clamp(4rem, 12vh, 8rem);
   pointer-events: none;
   z-index: 4;
-}
-
-@media (max-width: 768px) {
-  #hero-gradual-blur-root {
-    height: 7rem;
-  }
-}
-
-@media (max-width: 480px) {
-  #hero-gradual-blur-root {
-    height: 4rem;
-  }
 }
 
 @keyframes heroIntroReveal {
@@ -573,6 +563,10 @@ button {
   text-align: center;
 }
 
+.hero--wayflyer .hero__inner {
+  overflow: hidden;
+}
+
 .hero__content {
   display: flex;
   flex-direction: column;
@@ -678,8 +672,19 @@ button {
   position: relative;
   width: 100%;
   max-width: var(--hero-media-max);
-  margin-bottom: calc(-1 * var(--hero-media-crop));
-  clip-path: inset(0 0 var(--hero-media-crop) 0);
+  margin-bottom: 0;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 calc(100% - var(--hero-media-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 calc(100% - var(--hero-media-fade)),
+    transparent 100%
+  );
 }
 
 .hero__media.is-parallax-active {
@@ -693,9 +698,7 @@ button {
   border-radius: var(--radius-xl);
   border: 2.5px solid rgba(255, 255, 255, 0.45);
   background: var(--footer-bg);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -789,7 +792,7 @@ button {
 .story-stack-section {
   position: relative;
   z-index: 3;
-  margin-top: calc(-1 * var(--hero-overlap));
+  margin-top: 0;
   padding-top: clamp(48px, 8vw, 96px);
   background: var(--bg-card);
   overflow-x: clip;
@@ -1847,6 +1850,7 @@ button {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  font-family: "IBM Plex Sans", "IBM Plex Sans Thai", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .testimonial-card.is-active .testimonial-card__quote {
@@ -1854,6 +1858,7 @@ button {
 }
 
 .testimonial-card.is-active .testimonial-card__quote p {
+  font-family: inherit;
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-muted);
@@ -2904,14 +2909,7 @@ body.is-modal-open {
 }
 
 @media (max-width: 768px) {
-  .hero--wayflyer {
-    min-height: 100vh;
-    min-height: 100svh;
-  }
-
   .hero__inner {
-    min-height: 100vh;
-    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -2929,7 +2927,8 @@ body.is-modal-open {
     margin-top: clamp(8px, 2vw, 16px);
     flex-shrink: 0;
     margin-bottom: 0;
-    clip-path: none;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 
   .hero__media-frame {
@@ -2940,9 +2939,6 @@ body.is-modal-open {
     border-radius: calc(var(--radius-md) - 2.5px);
   }
 
-  .story-stack-section {
-    margin-top: 0;
-  }
 }
 
 @media (max-width: 640px) {
