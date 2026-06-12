@@ -598,6 +598,15 @@ button {
   color: #fafafa;
 }
 
+.hero__title-line {
+  display: block;
+}
+
+.hero__title-line--second {
+  display: block;
+  white-space: nowrap;
+}
+
 .hero--wayflyer .hero__subtitle {
   color: rgba(255, 255, 255, 0.72);
 }
@@ -714,6 +723,55 @@ button {
   aspect-ratio: 5 / 3;
   object-fit: cover;
   border-radius: calc(var(--radius-xl) - 2.5px);
+}
+
+.hero--wayflyer:has(.hero__media-frame--platform) {
+  overflow: hidden;
+}
+
+.hero--wayflyer:has(.hero__media-frame--platform) .hero__inner {
+  overflow: hidden;
+}
+
+.hero--wayflyer:has(.hero__media-frame--platform) .hero__media {
+  overflow: hidden;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.hero__media-frame--platform {
+  overflow: hidden;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hero__platform-visual {
+  width: 100%;
+  overflow: hidden;
+}
+
+.hero__media-frame--platform .story-scene__teams-stage {
+  max-width: none;
+  overflow: hidden;
+}
+
+.hero__media-frame--platform .story-scene__team-badges {
+  overflow: hidden;
+}
+
+.hero__media-frame--platform .story-scene__teams-mockup {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  aspect-ratio: auto;
+  object-fit: contain;
+  border-radius: 0;
+}
+
+.hero__media-frame--platform .hero__play {
+  z-index: 20;
 }
 
 .hero__cta {
@@ -2935,10 +2993,20 @@ body.is-modal-open {
     border-radius: var(--radius-md);
   }
 
-  .hero__media-frame img {
+  .hero__media-frame:not(.hero__media-frame--platform) img {
     border-radius: calc(var(--radius-md) - 2.5px);
   }
 
+  .hero--wayflyer:has(.hero__media-frame--platform) .hero__media {
+    width: 100vw;
+    max-width: 100vw;
+    margin-inline: calc(50% - 50vw);
+  }
+
+  .hero__media-frame--platform .story-scene__teams-mockup-wrap {
+    width: 112%;
+    margin-inline: -6%;
+  }
 }
 
 @media (max-width: 640px) {
@@ -2948,6 +3016,11 @@ body.is-modal-open {
 
   .hero__content {
     margin-bottom: clamp(32px, 6vw, 48px);
+  }
+
+  .hero__media-frame--platform .story-scene__teams-mockup-wrap {
+    width: 118%;
+    margin-inline: -9%;
   }
 
   .hero__trust-divider {

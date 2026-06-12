@@ -91,7 +91,7 @@
 
 .pricing-section__plans {
   display: grid;
-  grid-template-columns: minmax(220px, 1.35fr) 1fr 1fr;
+  grid-template-columns: minmax(200px, 1.2fr) repeat(3, minmax(0, 1fr));
 }
 
 .pricing-section__plan-spacer {
@@ -125,6 +125,7 @@
 }
 
 .pricing-section__plan-col {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -136,15 +137,17 @@
 .pricing-section__plan-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   align-self: flex-start;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 9999px;
   border: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
-  background: var(--blue-50, #f5f5f5);
-  font-size: 12px;
+  background: var(--bg-elevated, #f9f9f9);
+  font-size: 13px;
   font-weight: 500;
-  color: var(--text-dim, #737373);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--text-muted, #525252);
 }
 
 .pricing-section__plan-title {
@@ -212,10 +215,6 @@
   border-color: rgba(0, 0, 0, 0.15);
 }
 
-.pricing-section__recommended {
-  position: relative;
-}
-
 .pricing-section__recommended::before {
   content: "";
   position: absolute;
@@ -228,13 +227,25 @@
   );
 }
 
+.pricing-section__plan-col--enterprise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(220, 38, 38, 0.03) 0%,
+    transparent 48%
+  );
+}
+
 .pricing-section__features {
   border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
 }
 
 .pricing-section__feature-row {
   display: grid;
-  grid-template-columns: minmax(220px, 1.35fr) 1fr 1fr;
+  grid-template-columns: minmax(200px, 1.2fr) repeat(3, minmax(0, 1fr));
   border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
 }
 
@@ -375,13 +386,15 @@
     background: var(--bg-elevated, #f4f4f5);
   }
 
-  .pricing-section[data-active-plan="business"] .pricing-section__plan-col[data-plan="enterprise"],
-  .pricing-section[data-active-plan="enterprise"] .pricing-section__plan-col[data-plan="business"] {
+  .pricing-section[data-active-plan="personal"] .pricing-section__plan-col:not([data-plan="personal"]),
+  .pricing-section[data-active-plan="business"] .pricing-section__plan-col:not([data-plan="business"]),
+  .pricing-section[data-active-plan="enterprise"] .pricing-section__plan-col:not([data-plan="enterprise"]) {
     display: none;
   }
 
-  .pricing-section[data-active-plan="business"] .pricing-section__feature-cell[data-plan="enterprise"],
-  .pricing-section[data-active-plan="enterprise"] .pricing-section__feature-cell[data-plan="business"] {
+  .pricing-section[data-active-plan="personal"] .pricing-section__feature-cell:not([data-plan="personal"]),
+  .pricing-section[data-active-plan="business"] .pricing-section__feature-cell:not([data-plan="business"]),
+  .pricing-section[data-active-plan="enterprise"] .pricing-section__feature-cell:not([data-plan="enterprise"]) {
     display: none;
   }
 
@@ -405,7 +418,8 @@
     box-shadow: none;
   }
 
-  .pricing-section__recommended::before {
+  .pricing-section__recommended::before,
+  .pricing-section__plan-col--enterprise::before {
     display: none;
   }
 

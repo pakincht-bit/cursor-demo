@@ -10,17 +10,21 @@ const PRIMARY_CTA_URL = "https://form.typeform.com/to/YDvQlvrN"
 
 type FeatureValue = boolean | string | string[]
 
-interface ComparisonFeature {
-  name: string
-  subItems?: string[]
-  business: FeatureValue
-  enterprise: FeatureValue
-}
-
 const PLANS = [
+  {
+    id: "personal",
+    name: "Fastwork",
+    teamSize: "1 person",
+    description:
+      "For individuals. Hire freelancers on your own — pay per project before work begins.",
+    cta: "Get started",
+    ctaVariant: "outline" as const,
+    highlighted: false,
+  },
   {
     id: "business",
     name: "For Business",
+    teamSize: "2–50 teammates",
     description:
       "Self-serve. For SMEs and mid-market teams that want to hire freelancers as a business, not as individuals.",
     cta: "Set up your business",
@@ -30,6 +34,7 @@ const PLANS = [
   {
     id: "enterprise",
     name: "For Enterprise",
+    teamSize: "50+ employees",
     description:
       "Sales-led. For large businesses with procurement, legal, and security review requirements.",
     cta: "Talk to Enterprise team",
@@ -40,72 +45,60 @@ const PLANS = [
 
 type PlanId = (typeof PLANS)[number]["id"]
 
+interface ComparisonFeature {
+  name: string
+  subItems?: string[]
+  values: Record<PlanId, FeatureValue>
+}
+
 const FEATURES: ComparisonFeature[] = [
   {
-    name: "Payment methods",
-    business: [
-      "Pre-paid Team Credit",
-      "Credit / debit card",
-      "Bank Transfer",
-      "Promptpay QR",
-    ],
-    enterprise: ["Similar to business", "Credit term / invoicing"],
+    name: "Payment",
+    values: {
+      personal: "Pay before hiring",
+      business: "Top up credit and start hiring immediately",
+      enterprise: "Monthly billing (credit term)",
+    },
   },
   {
-    name: "Billing as multiple entity",
-    business: true,
-    enterprise: true,
+    name: "Minimum service fee",
+    values: {
+      personal: "No minimum",
+      business: "No minimum",
+      enterprise: "Starting from ฿50,000",
+    },
   },
   {
-    name: "Consolidated statements and documents",
-    business: true,
-    enterprise: true,
+    name: "Account Service coordination",
+    values: {
+      personal: false,
+      business: false,
+      enterprise: true,
+    },
   },
   {
-    name: "Access to business ready freelances pool",
-    business: true,
-    enterprise: true,
+    name: "Access to Business-Ready freelancers",
+    values: {
+      personal: false,
+      business: true,
+      enterprise: true,
+    },
   },
   {
-    name: "Freelances sourcing",
-    business: "Self-serve — browse & hire from pool",
-    enterprise: "Fastwork sources freelancers for you",
+    name: "Tax invoice",
+    values: {
+      personal: "If freelancer is a legal entity",
+      business: "If freelancer is a legal entity",
+      enterprise: true,
+    },
   },
   {
-    name: "Dedicated Account Manager + Project Manager",
-    business: "Self-serve + platform support",
-    enterprise: "Dedicated AM & PM",
-  },
-  {
-    name: "Input VAT deduction",
-    business: "Only if freelances allow",
-    enterprise: "Full input VAT deduction",
-  },
-  {
-    name: "Custom contracts",
-    subItems: [
-      "Master Service Agreement",
-      "Data Processing Agreement",
-      "Non Disclosure Agreement",
-      "other",
-    ],
-    business: "Standard platform terms",
-    enterprise: "MSA, DPA, NDA & custom agreements",
-  },
-  {
-    name: "Vendor security questionnaire / SSO review",
-    business: "Standard platform security",
-    enterprise: "Security questionnaire & SSO review",
-  },
-  {
-    name: "Minimum spending",
-    business: "no minimum",
-    enterprise: "50k thb+",
-  },
-  {
-    name: "Onboarding",
-    business: "Self-serve",
-    enterprise: "Contact our enterprise team",
+    name: "Team dashboard",
+    values: {
+      personal: false,
+      business: true,
+      enterprise: true,
+    },
   },
 ]
 
@@ -192,7 +185,7 @@ function Pricing() {
               )}
               onClick={() => setActivePlan(plan.id)}
             >
-              {plan.name.replace(/^For /, "")}
+              {plan.id === "personal" ? plan.name : plan.name.replace(/^For /, "")}
             </button>
           ))}
         </div>
@@ -210,9 +203,11 @@ function Pricing() {
                 data-plan={plan.id}
                 className={cn(
                   "pricing-section__plan-col",
-                  plan.highlighted && "pricing-section__recommended"
+                  plan.highlighted && "pricing-section__recommended",
+                  plan.id === "enterprise" && "pricing-section__plan-col--enterprise"
                 )}
               >
+                <span className="pricing-section__plan-badge">{plan.teamSize}</span>
                 <h3 className="pricing-section__plan-title">{plan.name}</h3>
                 <p className="pricing-section__plan-desc">{plan.description}</p>
                 {plan.ctaVariant === "primary" ? (
@@ -228,11 +223,21 @@ function Pricing() {
                   </Button>
                 ) : (
                   <Button
+                    asChild={plan.id === "personal"}
                     variant="outline"
                     className="pricing-section__cta pricing-section__cta--outline gap-2"
                   >
-                    {plan.cta}
-                    <PhoneCall className="h-4 w-4" />
+                    {plan.id === "personal" ? (
+                      <a href={PRIMARY_CTA_URL}>
+                        {plan.cta}
+                        <MoveRight className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <>
+                        {plan.cta}
+                        <PhoneCall className="h-4 w-4" />
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
@@ -246,12 +251,15 @@ function Pricing() {
                   <FeatureName name={feature.name} subItems={feature.subItems} />
                 </div>
                 <div className="pricing-section__feature-values">
-                  <div className="pricing-section__feature-cell" data-plan="business">
-                    <FeatureCell value={feature.business} />
-                  </div>
-                  <div className="pricing-section__feature-cell" data-plan="enterprise">
-                    <FeatureCell value={feature.enterprise} />
-                  </div>
+                  {PLANS.map((plan) => (
+                    <div
+                      key={plan.id}
+                      className="pricing-section__feature-cell"
+                      data-plan={plan.id}
+                    >
+                      <FeatureCell value={feature.values[plan.id]} />
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}

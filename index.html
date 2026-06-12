@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Momo+Signature&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=164" />
+  <link rel="stylesheet" href="styles.css?v=167" />
   <link rel="stylesheet" href="assets/story-stack/story-stack.css?v=36" />
 </head>
 <body>
@@ -40,7 +40,10 @@
         <div class="hero__content">
           <img src="assets/Logo-white.svg" alt="fastwork" class="hero__logo" width="184" height="48" />
           <h1 class="hero__title">
-            Find a <span class="hero__title-accent">human</span> for your businesses
+            <span class="hero__title-line">Human help.</span>
+            <span class="hero__title-line hero__title-line--second">
+              Built for your&nbsp;<span class="hero__title-accent">businesses.</span>
+            </span>
           </h1>
           <p class="hero__subtitle">
             Create multi-business profiles and manage every payment method in a single platform — so you can run your businesses with ease.
@@ -51,13 +54,20 @@
           </div>
         </div>
         <div class="hero__media">
-          <div class="hero__media-frame">
-            <img
-              src="assets/ui-platform.png?v=2"
-              alt="Platform preview"
-              width="900"
-              height="560"
-            />
+          <div class="hero__media-frame hero__media-frame--platform">
+            <div class="hero__platform-visual story-scene__teams-stage" id="heroPlatformVisual">
+              <div class="story-scene__teams-mockup-wrap">
+                <img
+                  class="story-scene__teams-mockup"
+                  src="assets/ui-platform-no-bg.png?v=1"
+                  alt="fastwork for business team dashboard with setup steps, members, credits, and transactions"
+                  width="2277"
+                  height="1417"
+                  decoding="async"
+                />
+              </div>
+              <div class="story-scene__team-badges" role="list" aria-label="Team roles"></div>
+            </div>
             <button class="hero__play" type="button" id="heroPlayBtn" aria-label="Play video" aria-haspopup="dialog">
               <svg width="20" height="22" viewBox="0 0 20 22" fill="none" aria-hidden="true">
                 <path d="M19 9.268a2 2 0 0 1 0 3.464L2.5 20.66A2 2 0 0 1 0 18.928V3.072A2 2 0 0 1 2.5 1.34L19 9.268Z" fill="currentColor"/>
@@ -390,7 +400,7 @@
   </div>
 
   <script type="module" src="assets/story-stack/story-stack.js?v=36"></script>
-  <script type="module" src="script.js?v=41"></script>
+  <script type="module" src="script.js?v=42"></script>
   <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
 </body>
 </html>

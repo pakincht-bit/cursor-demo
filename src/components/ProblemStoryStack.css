@@ -695,12 +695,50 @@
   overflow: visible;
 }
 
+.story-scene__teams-stage::before,
+.story-scene__teams-stage::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(clamp(40px, 8vw, 72px));
+}
+
+.story-scene__teams-stage::before {
+  width: clamp(220px, 62%, 520px);
+  height: clamp(220px, 62%, 520px);
+  top: -6%;
+  left: -4%;
+  background: linear-gradient(135deg, #84b5ff, #0569ff, #ae8eff);
+  opacity: 0.52;
+}
+
+.story-scene__teams-stage::after {
+  width: clamp(200px, 56%, 460px);
+  height: clamp(200px, 56%, 460px);
+  right: -3%;
+  bottom: -4%;
+  background: linear-gradient(135deg, #0569ff, #ae8eff, #ffcca5);
+  opacity: 0.44;
+}
+
+.story-scene__teams-mockup-wrap {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  overflow: visible;
+}
+
 .story-scene__teams-mockup {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   max-width: 72rem;
   height: auto;
   margin-inline: auto;
+  border-radius: 0;
 }
 
 .story-scene__team-badges {
@@ -709,74 +747,102 @@
   pointer-events: none;
 }
 
-.story-scene__team-badge {
+.story-scene__team-cursor {
+  --team-cursor-color: #0569ff;
   position: absolute;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(40px, 8vw, 52px);
-  height: clamp(22px, 4vw, 28px);
-  border-radius: 6px;
-  border: 1.5px solid var(--bg-card, #fff);
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  align-items: start;
+  width: auto;
+  height: auto;
+  color: var(--team-cursor-color);
+  filter: drop-shadow(0 2px 6px rgba(15, 23, 42, 0.14));
+  animation: team-cursor-float 5s ease-in-out infinite;
+}
+
+.story-scene__team-cursor-pointer {
+  grid-column: 1;
+  grid-row: 1;
+  width: clamp(15px, 2.6vw, 20px);
+  height: auto;
+}
+
+.story-scene__team-cursor-label {
+  grid-column: 2;
+  grid-row: 2;
+  margin-top: clamp(2px, 0.45vw, 4px);
+  margin-left: clamp(1px, 0.35vw, 3px);
+  padding: clamp(3px, 0.55vw, 5px) clamp(7px, 1.1vw, 10px);
+  border-radius: 4px;
+  background: var(--team-cursor-color);
   color: #fff;
-  overflow: hidden;
-  box-shadow:
-    0 4px 10px rgba(15, 23, 42, 0.12),
-    0 1px 3px rgba(15, 23, 42, 0.06);
-  animation: team-badge-float 5s ease-in-out infinite;
-}
-
-.story-scene__team-badge-name {
-  font-size: clamp(7px, 1.4vw, 9px);
+  font-size: clamp(9px, 1.45vw, 12px);
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   line-height: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
 }
 
-.story-scene__team-badge--1 {
+.story-scene__team-cursor--1 {
   top: 4%;
   left: -1%;
   animation-duration: 4.8s;
 }
 
-.story-scene__team-badge--2 {
+.story-scene__team-cursor--2 {
   top: 1%;
   right: 1%;
   animation-duration: 5.4s;
   animation-delay: -1.2s;
 }
 
-.story-scene__team-badge--3 {
+.story-scene__team-cursor--3 {
   top: 38%;
   left: -2%;
   animation-duration: 5.1s;
   animation-delay: -2.4s;
 }
 
-.story-scene__team-badge--4 {
+.story-scene__team-cursor--4 {
   top: 34%;
   right: -1%;
   animation-duration: 4.6s;
   animation-delay: -0.8s;
 }
 
-.story-scene__team-badge--5 {
+.story-scene__team-cursor--5 {
   bottom: 8%;
   left: 3%;
   animation-duration: 5.6s;
   animation-delay: -1.8s;
 }
 
-.story-scene__team-badge--6 {
+.story-scene__team-cursor--6 {
   bottom: 4%;
   right: -1%;
   animation-duration: 4.9s;
   animation-delay: -3s;
 }
 
-@keyframes team-badge-float {
+.story-scene__user-badge {
+  --team-cursor-color: #0569ff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 6px rgba(15, 23, 42, 0.14));
+  will-change: transform;
+}
+
+.story-scene__user-badge .story-scene__team-cursor-label {
+  display: inline-block;
+  margin: 0;
+}
+
+@keyframes team-cursor-float {
   0%,
   100% {
     transform: translate(0, 0);
@@ -788,6 +854,12 @@
 
   66% {
     transform: translate(-4px, -5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-scene__team-cursor {
+    animation: none;
   }
 }
 
@@ -820,46 +892,46 @@
     max-width: none;
   }
 
-  .story-scene__team-badge {
-    width: clamp(34px, 10vw, 42px);
-    height: clamp(20px, 5.5vw, 24px);
-    border-width: 1.5px;
-    border-radius: 5px;
+  .story-scene__team-cursor-pointer {
+    width: clamp(13px, 3.8vw, 17px);
   }
 
-  .story-scene__team-badge-name {
-    font-size: clamp(6px, 1.8vw, 8px);
+  .story-scene__team-cursor-label {
+    margin-top: clamp(1px, 0.5vw, 3px);
+    margin-left: clamp(1px, 0.4vw, 2px);
+    padding: clamp(2px, 0.7vw, 4px) clamp(6px, 1.6vw, 8px);
+    font-size: clamp(8px, 2vw, 10px);
   }
 
-  .story-scene__team-badge--1 {
+  .story-scene__team-cursor--1 {
     top: 6%;
     left: 0;
   }
 
-  .story-scene__team-badge--2 {
+  .story-scene__team-cursor--2 {
     top: 3%;
     right: 0;
   }
 
-  .story-scene__team-badge--3,
-  .story-scene__team-badge--4 {
+  .story-scene__team-cursor--3,
+  .story-scene__team-cursor--4 {
     top: 40%;
   }
 
-  .story-scene__team-badge--3 {
+  .story-scene__team-cursor--3 {
     left: 0;
   }
 
-  .story-scene__team-badge--4 {
+  .story-scene__team-cursor--4 {
     right: 0;
   }
 
-  .story-scene__team-badge--5 {
+  .story-scene__team-cursor--5 {
     bottom: 10%;
     left: 4%;
   }
 
-  .story-scene__team-badge--6 {
+  .story-scene__team-cursor--6 {
     bottom: 6%;
     right: 0;
   }

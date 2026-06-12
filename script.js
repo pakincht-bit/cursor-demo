@@ -340,6 +340,27 @@ testimonialCards.forEach((card) => {
   backdrop.addEventListener("click", closeModal);
 })();
 
+const HERO_TEAM_ROLES = [
+  { role: "Admin", color: "#0569FF", position: 1 },
+  { role: "Finance", color: "#AE8EFF", position: 2 },
+  { role: "Hiring", color: "#FF7088", position: 3 },
+  { role: "Operations", color: "#6FA8FF", position: 4 },
+  { role: "Legal", color: "#7B61FF", position: 5 },
+  { role: "Marketing", color: "#FFB508", position: 6 },
+];
+
+const TEAM_CURSOR_POINTER = `<svg class="story-scene__team-cursor-pointer" viewBox="0 0 12 18" fill="none" aria-hidden="true"><path d="M1 1v12.2l3.2-2.3L6.4 16.8l1.6-.8-2.3-5.4h4.8L1 1Z" fill="currentColor" stroke="#fff" stroke-width="1.25" stroke-linejoin="round"/></svg>`;
+
+function createTeamRoleCursor({ role, color, position }) {
+  return `<div role="listitem"><div class="story-scene__team-cursor story-scene__team-cursor--${position}" style="--team-cursor-color: ${color}">${TEAM_CURSOR_POINTER}<span class="story-scene__team-cursor-label">${role}</span></div></div>`;
+}
+
+(function initHeroPlatformVisual() {
+  const badges = document.querySelector("#heroPlatformVisual .story-scene__team-badges");
+  if (!badges) return;
+  badges.innerHTML = HERO_TEAM_ROLES.map(createTeamRoleCursor).join("");
+})();
+
 (function initSectionReveal() {
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const targets = document.querySelectorAll(

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import CircularGallery from './CircularGallery';
 import { FREELANCER_GALLERY_ITEMS } from './freelancerGalleryItems';
 import MagicBento from './MagicBento';
@@ -80,22 +81,74 @@ function getGalleryScrollProgress(card) {
   return (scrollTop - pinStart) / (pinEnd - pinStart);
 }
 
-const BRIDGE_LINES = [
-  { id: 'a', startX: 2, colors: ['#84b5ff', '#0569ff'], width: 2.2, opacity: 0.78 },
-  { id: 'b', startX: 8, colors: ['#84b5ff', '#0569ff'], width: 2.4, opacity: 0.82 },
-  { id: 'c', startX: 14, colors: ['#0569ff', '#84b5ff'], width: 2.8, opacity: 0.88 },
-  { id: 'd', startX: 22, colors: ['#0569ff', '#ae8eff'], width: 2.4, opacity: 0.8 },
-  { id: 'e', startX: 30, colors: ['#84b5ff', '#ae8eff'], width: 2.6, opacity: 0.84 },
-  { id: 'f', startX: 38, colors: ['#84b5ff', '#8565ff'], width: 2.2, opacity: 0.74 },
-  { id: 'g', startX: 46, colors: ['#ae8eff', '#8565ff'], width: 2.5, opacity: 0.76 },
-  { id: 'h', startX: 54, colors: ['#ae8eff', '#ffcca5'], width: 2.4, opacity: 0.8 },
-  { id: 'i', startX: 62, colors: ['#8565ff', '#ffcca5'], width: 2.8, opacity: 0.86 },
-  { id: 'j', startX: 70, colors: ['#8565ff', '#ffb508'], width: 2.4, opacity: 0.82 },
-  { id: 'k', startX: 78, colors: ['#ffcca5', '#ffb508'], width: 2.6, opacity: 0.78 },
-  { id: 'l', startX: 86, colors: ['#ffcca5', '#ae8eff'], width: 2.2, opacity: 0.72 },
-  { id: 'm', startX: 92, colors: ['#ffb508', '#ffcca5'], width: 2.4, opacity: 0.76 },
-  { id: 'n', startX: 98, colors: ['#84b5ff', '#ffcca5'], width: 2, opacity: 0.7 }
+const BRIDGE_GRADIENT_STOPS = [
+  { pos: 0, color: '#84b5ff' },
+  { pos: 1 / 3, color: '#0569ff' },
+  { pos: 2 / 3, color: '#ae8eff' },
+  { pos: 1, color: '#ffcca5' }
 ];
+
+function hexToRgb(hex) {
+  const value = parseInt(hex.slice(1), 16);
+  return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
+}
+
+function rgbToHex(r, g, b) {
+  return `#${[r, g, b]
+    .map(channel => Math.round(channel).toString(16).padStart(2, '0'))
+    .join('')}`;
+}
+
+function sampleBridgeGradient(t) {
+  const clamped = Math.min(1, Math.max(0, t));
+
+  for (let i = 0; i < BRIDGE_GRADIENT_STOPS.length - 1; i += 1) {
+    const current = BRIDGE_GRADIENT_STOPS[i];
+    const next = BRIDGE_GRADIENT_STOPS[i + 1];
+
+    if (clamped <= next.pos || i === BRIDGE_GRADIENT_STOPS.length - 2) {
+      const span = next.pos - current.pos || 1;
+      const local = (clamped - current.pos) / span;
+      const from = hexToRgb(current.color);
+      const to = hexToRgb(next.color);
+
+      return rgbToHex(
+        from[0] + (to[0] - from[0]) * local,
+        from[1] + (to[1] - from[1]) * local,
+        from[2] + (to[2] - from[2]) * local
+      );
+    }
+  }
+
+  return BRIDGE_GRADIENT_STOPS[BRIDGE_GRADIENT_STOPS.length - 1].color;
+}
+
+const BRIDGE_LINE_DEFS = [
+  { id: 'a', startX: 2, width: 2.2, opacity: 0.78 },
+  { id: 'b', startX: 8, width: 2.4, opacity: 0.82 },
+  { id: 'c', startX: 14, width: 2.8, opacity: 0.88 },
+  { id: 'd', startX: 22, width: 2.4, opacity: 0.8 },
+  { id: 'e', startX: 30, width: 2.6, opacity: 0.84 },
+  { id: 'f', startX: 38, width: 2.2, opacity: 0.74 },
+  { id: 'g', startX: 46, width: 2.5, opacity: 0.76 },
+  { id: 'h', startX: 54, width: 2.4, opacity: 0.8 },
+  { id: 'i', startX: 62, width: 2.8, opacity: 0.86 },
+  { id: 'j', startX: 70, width: 2.4, opacity: 0.82 },
+  { id: 'k', startX: 78, width: 2.6, opacity: 0.78 },
+  { id: 'l', startX: 86, width: 2.2, opacity: 0.72 },
+  { id: 'm', startX: 92, width: 2.4, opacity: 0.76 },
+  { id: 'n', startX: 98, width: 2, opacity: 0.7 }
+];
+
+const BRIDGE_LINES = BRIDGE_LINE_DEFS.map(line => {
+  const outer = line.startX / 100;
+  const inner = (line.startX + 50) / 2 / 100;
+
+  return {
+    ...line,
+    colors: [sampleBridgeGradient(outer), sampleBridgeGradient(inner)]
+  };
+});
 
 const BRIDGE_LOGO_SRC = 'assets/Logo-black.svg';
 
@@ -403,41 +456,153 @@ function SceneHeadline({ scene }) {
 }
 
 const TEAM_MEMBERS = [
-  { id: 'mina', name: 'Mina', color: '#0569FF', position: 1 },
-  { id: 'kai', name: 'Kai', color: '#AE8EFF', position: 2 },
-  { id: 'anna', name: 'Anna', color: '#FFB780', position: 3 },
-  { id: 'ryan', name: 'Ryan', color: '#6FA8FF', position: 4 },
-  { id: 'nira', name: 'Nira', color: '#0569FF', position: 5 },
-  { id: 'theo', name: 'Theo', color: '#AE8EFF', position: 6 }
+  { id: 'admin', role: 'Admin', color: '#0569FF', position: 1 },
+  { id: 'finance', role: 'Finance', color: '#AE8EFF', position: 2 },
+  { id: 'hiring', role: 'Hiring', color: '#FF7088', position: 3 },
+  { id: 'operations', role: 'Operations', color: '#6FA8FF', position: 4 },
+  { id: 'legal', role: 'Legal', color: '#7B61FF', position: 5 },
+  { id: 'marketing', role: 'Marketing', color: '#FFB508', position: 6 }
 ];
 
-function TeamMemberBadge({ member }) {
+const USER_TEAM_BADGE = {
+  role: 'You',
+  color: '#0569FF'
+};
+
+function TeamCursorGraphic({ label, color, className }) {
   return (
-    <div
-      className={`story-scene__team-badge story-scene__team-badge--${member.position}`}
-      style={{ backgroundColor: member.color }}
-      role="listitem"
-    >
-      <span className="story-scene__team-badge-name">{member.name}</span>
+    <div className={className} style={{ '--team-cursor-color': color }}>
+      <svg
+        className="story-scene__team-cursor-pointer"
+        viewBox="0 0 12 18"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M1 1v12.2l3.2-2.3L6.4 16.8l1.6-.8-2.3-5.4h4.8L1 1Z"
+          fill="currentColor"
+          stroke="#fff"
+          strokeWidth="1.25"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <span className="story-scene__team-cursor-label">{label}</span>
     </div>
   );
+}
+
+function TeamMemberCursor({ member }) {
+  return (
+    <div role="listitem">
+      <TeamCursorGraphic
+        label={member.role}
+        color={member.color}
+        className={`story-scene__team-cursor story-scene__team-cursor--${member.position}`}
+      />
+    </div>
+  );
+}
+
+function isTeamsSectionActive(card) {
+  if (!card) return false;
+  if (card.style.visibility === 'hidden' || card.style.pointerEvents === 'none') return false;
+
+  const rect = card.getBoundingClientRect();
+  const viewportHeight = window.innerHeight;
+
+  return rect.top <= 8 && rect.bottom >= viewportHeight * 0.72;
+}
+
+function useTeamUserBadge(sectionRef) {
+  const [badge, setBadge] = useState({ active: false, visible: false, x: 0, y: 0 });
+  const activeRef = useRef(false);
+  const lastMouseRef = useRef({ x: 0, y: 0, has: false });
+
+  useEffect(() => {
+    const card = sectionRef.current?.closest('.scroll-stack-card');
+    if (!card || !window.matchMedia('(pointer: fine)').matches) return undefined;
+
+    let frame = 0;
+
+    const showUserBadge = () => {
+      if (!lastMouseRef.current.has) return;
+
+      setBadge({
+        active: true,
+        visible: true,
+        x: lastMouseRef.current.x,
+        y: lastMouseRef.current.y
+      });
+    };
+
+    const syncActive = () => {
+      const nextActive = isTeamsSectionActive(card);
+      activeRef.current = nextActive;
+
+      if (nextActive) {
+        showUserBadge();
+        return;
+      }
+
+      setBadge(prev => ({ ...prev, active: false, visible: false }));
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        syncActive();
+      });
+    };
+
+    const onMouseMove = event => {
+      lastMouseRef.current = {
+        x: event.clientX,
+        y: event.clientY,
+        has: true
+      };
+
+      if (!activeRef.current) return;
+
+      setBadge({
+        active: true,
+        visible: true,
+        x: event.clientX,
+        y: event.clientY
+      });
+    };
+
+    syncActive();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('mousemove', onMouseMove);
+    };
+  }, [sectionRef]);
+
+  return badge;
 }
 
 function TeamPlatformVisual() {
   return (
     <div className="story-scene__teams-stage">
-      <img
-        className="story-scene__teams-mockup"
-        src="assets/ui-platform.png?v=2"
-        alt="fastwork for business team dashboard with setup steps, members, credits, and transactions"
-        width={2277}
-        height={1417}
-        loading="lazy"
-        decoding="async"
-      />
-      <div className="story-scene__team-badges" role="list" aria-label="Team members">
+      <div className="story-scene__teams-mockup-wrap">
+        <img
+          className="story-scene__teams-mockup"
+          src="assets/ui-platform-no-bg.png?v=1"
+          alt="fastwork for business team dashboard with setup steps, members, credits, and transactions"
+          width={2277}
+          height={1417}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div className="story-scene__team-badges" role="list" aria-label="Team roles">
         {TEAM_MEMBERS.map(member => (
-          <TeamMemberBadge key={member.id} member={member} />
+          <TeamMemberCursor key={member.id} member={member} />
         ))}
       </div>
     </div>
@@ -445,6 +610,9 @@ function TeamPlatformVisual() {
 }
 
 function TeamPlatformScene({ scene }) {
+  const sectionRef = useRef(null);
+  const userBadge = useTeamUserBadge(sectionRef);
+
   return (
     <>
       <div className="story-scene__content">
@@ -452,9 +620,24 @@ function TeamPlatformScene({ scene }) {
         <SceneHeadline scene={scene} />
         {scene.kicker ? <p className="story-scene__kicker">{scene.kicker}</p> : null}
       </div>
-      <div className="story-scene__teams-wrap">
+      <div ref={sectionRef} className="story-scene__teams-wrap">
         <TeamPlatformVisual />
       </div>
+      {userBadge.active && userBadge.visible
+        ? createPortal(
+            <div
+              className="story-scene__user-badge"
+              style={{
+                '--team-cursor-color': USER_TEAM_BADGE.color,
+                transform: `translate3d(${userBadge.x + 14}px, ${userBadge.y + 18}px, 0)`
+              }}
+              aria-hidden="true"
+            >
+              <span className="story-scene__team-cursor-label">{USER_TEAM_BADGE.role}</span>
+            </div>,
+            document.body
+          )
+        : null}
     </>
   );
 }
