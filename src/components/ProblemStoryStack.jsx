@@ -420,7 +420,7 @@ function TeamPlatformVisual() {
     <div className="story-scene__teams-stage">
       <img
         className="story-scene__teams-mockup"
-        src="assets/ui-platform.png"
+        src="assets/ui-platform.png?v=2"
         alt="fastwork for business team dashboard with setup steps, members, credits, and transactions"
         width={2277}
         height={1417}
