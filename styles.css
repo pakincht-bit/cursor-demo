@@ -391,7 +391,7 @@ button {
   z-index: 0;
   background: var(--footer-bg);
   padding-top: 0;
-  padding-bottom: 0;
+  padding-bottom: clamp(16px, 3vw, 32px);
 }
 
 .hero--wayflyer::after {
@@ -678,8 +678,7 @@ button {
   position: relative;
   width: 100%;
   max-width: var(--hero-media-max);
-  margin-bottom: calc(-1 * var(--hero-media-crop));
-  clip-path: inset(0 0 var(--hero-media-crop) 0);
+  margin-bottom: 0;
 }
 
 .hero__media.is-parallax-active {
@@ -789,7 +788,7 @@ button {
 .story-stack-section {
   position: relative;
   z-index: 3;
-  margin-top: calc(-1 * var(--hero-overlap));
+  margin-top: 0;
   padding-top: clamp(48px, 8vw, 96px);
   background: var(--bg-card);
   overflow-x: clip;
@@ -2928,8 +2927,6 @@ body.is-modal-open {
   .hero__media {
     margin-top: clamp(8px, 2vw, 16px);
     flex-shrink: 0;
-    margin-bottom: 0;
-    clip-path: none;
   }
 
   .hero__media-frame {
@@ -2938,10 +2935,6 @@ body.is-modal-open {
 
   .hero__media-frame img {
     border-radius: calc(var(--radius-md) - 2.5px);
-  }
-
-  .story-stack-section {
-    margin-top: 0;
   }
 }
 

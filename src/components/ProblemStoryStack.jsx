@@ -46,7 +46,7 @@ const PAYMENT_BENTO_CARDS = [
 
 const GALLERY_STACK = {
   stackPositionPx: 0,
-  itemStackDistance: 180
+  itemStackDistance: 0
 };
 
 function getDocumentOffsetTop(element) {
@@ -372,10 +372,18 @@ function SceneHeadline({ scene }) {
   return (
     <h2 className="story-scene__headline">
       {scene.headlineLeadAccent ? (
-        <>
-          <span className="story-scene__headline-accent">{scene.headlineLeadAccent}</span>{' '}
-          {scene.headline}
-        </>
+        scene.headlineLine2 ? (
+          <>
+            <span className="story-scene__headline-accent">{scene.headlineLeadAccent}</span>
+            <br />
+            {scene.headlineLine2}
+          </>
+        ) : (
+          <>
+            <span className="story-scene__headline-accent">{scene.headlineLeadAccent}</span>{' '}
+            {scene.headline}
+          </>
+        )
       ) : scene.headlineAccent ? (
         <>
           {scene.headline}{' '}
@@ -507,7 +515,7 @@ const SCENES = [
   {
     id: 'payments',
     eyebrow: 'How you pay',
-    headline: 'Every payment method',
+    headlineLeadAccent: 'Every payment method',
     headlineLine2: 'your business already uses.',
     tone: 'benefit',
     visual: 'payment-bento'

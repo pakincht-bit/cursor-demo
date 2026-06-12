@@ -603,7 +603,6 @@ class App {
   updateScrollMetrics(progress = null) {
     if (!this.medias || !this.medias[0] || !this.itemCount) return;
     const width = this.medias[0].width;
-    const cardWidth = this.medias[0].plane.scale.x;
     const currentProgress =
       progress ??
       (this.scrollTravel > 0
@@ -611,12 +610,10 @@ class App {
         : 0);
 
     if (this.scrollLinked && !this.duplicateItems) {
-      const viewportHalf = this.viewport.width / 2;
-      const edgeInset = width * 0.1;
-      this.scrollBase = Math.max(0, viewportHalf - cardWidth * 0.52 - edgeInset);
       const lastIndex = Math.max(0, this.itemCount - 1);
-      const scrollEnd = lastIndex * width - viewportHalf + cardWidth * 0.52 + edgeInset;
-      this.scrollTravel = Math.max(width * 0.5, scrollEnd - this.scrollBase);
+      // Progress 0: first card centered (x=0). Progress 1: last card centered.
+      this.scrollBase = 0;
+      this.scrollTravel = lastIndex * width;
     } else {
       this.scrollBase = (width * this.itemCount) / 2;
       this.scrollTravel = width * this.itemCount * 0.9;
