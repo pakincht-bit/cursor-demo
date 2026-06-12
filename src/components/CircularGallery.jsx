@@ -168,14 +168,36 @@ function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'blac
   context.font = font;
   const metrics = context.measureText(text);
   const textWidth = Math.ceil(metrics.width);
-  const textHeight = Math.ceil(getFontSize(font) * 1.2);
-  canvas.width = textWidth + 20;
-  canvas.height = textHeight + 20;
+  const textHeight = Math.ceil(getFontSize(font) * 1.35);
+  const padX = 18;
+  const padY = 10;
+  canvas.width = textWidth + padX * 2;
+  canvas.height = textHeight + padY * 2;
   context.font = font;
-  context.fillStyle = color;
   context.textBaseline = 'middle';
   context.textAlign = 'center';
   context.clearRect(0, 0, canvas.width, canvas.height);
+
+  const pillX = padX * 0.5;
+  const pillY = padY * 0.35;
+  const pillW = canvas.width - padX;
+  const pillH = canvas.height - padY * 0.7;
+  const radius = pillH / 2;
+  context.fillStyle = 'rgba(255, 255, 255, 0.92)';
+  context.beginPath();
+  context.moveTo(pillX + radius, pillY);
+  context.lineTo(pillX + pillW - radius, pillY);
+  context.quadraticCurveTo(pillX + pillW, pillY, pillX + pillW, pillY + radius);
+  context.lineTo(pillX + pillW, pillY + pillH - radius);
+  context.quadraticCurveTo(pillX + pillW, pillY + pillH, pillX + pillW - radius, pillY + pillH);
+  context.lineTo(pillX + radius, pillY + pillH);
+  context.quadraticCurveTo(pillX, pillY + pillH, pillX, pillY + pillH - radius);
+  context.lineTo(pillX, pillY + radius);
+  context.quadraticCurveTo(pillX, pillY, pillX + radius, pillY);
+  context.closePath();
+  context.fill();
+
+  context.fillStyle = color;
   context.fillText(text, canvas.width / 2, canvas.height / 2);
   const texture = new Texture(gl, { generateMipmaps: false });
   texture.image = canvas;
@@ -226,6 +248,7 @@ class Title {
     this.textColor = textColor;
     this.font = font;
     this.labelInside = labelInside;
+    this.labelOffsetY = 0;
     this.textureWidth = 0;
     this.textureHeight = 0;
     this.createMesh();
@@ -242,6 +265,8 @@ class Title {
     this.textureHeight = height;
     const geometry = new Plane(this.gl);
     const program = new Program(this.gl, {
+      depthTest: false,
+      depthWrite: false,
       vertex: `
         attribute vec3 position;
         attribute vec2 uv;
@@ -259,7 +284,7 @@ class Title {
         varying vec2 vUv;
         void main() {
           vec4 color = texture2D(tMap, vUv);
-          if (color.a < 0.1) discard;
+          if (color.a < 0.08) discard;
           gl_FragColor = color;
         }
       `,
@@ -268,7 +293,23 @@ class Title {
     });
     this.mesh = new Mesh(this.gl, { geometry, program });
     this.updateLayout();
-    this.mesh.setParent(this.plane);
+    if (this.labelInside) {
+      this.mesh.setParent(this.plane);
+    }
+  }
+  attachToScene(scene) {
+    if (this.labelInside || !this.mesh) return;
+    this.mesh.setParent(scene);
+  }
+  syncToPlane(plane) {
+    if (this.labelInside || !this.mesh) return;
+
+    const cos = Math.cos(plane.rotation.z);
+    const sin = Math.sin(plane.rotation.z);
+    this.mesh.position.x = plane.position.x - this.labelOffsetY * sin;
+    this.mesh.position.y = plane.position.y + this.labelOffsetY * cos;
+    this.mesh.position.z = 2.5;
+    this.mesh.rotation.z = plane.rotation.z;
   }
   updateLayout() {
     if (!this.mesh) return;
@@ -281,10 +322,10 @@ class Title {
     }
 
     const aspect = this.textureWidth / this.textureHeight;
-    const textHeight = this.plane.scale.y * 0.15;
+    const textHeight = this.plane.scale.y * 0.2;
     const textWidth = textHeight * aspect;
     this.mesh.scale.set(textWidth, textHeight, 1);
-    this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
+    this.labelOffsetY = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.12;
   }
 }
 
@@ -479,6 +520,10 @@ class Media {
       this.extra += this.widthTotal;
       this.isBefore = this.isAfter = false;
     }
+
+    if (this.title) {
+      this.title.syncToPlane(this.plane);
+    }
   }
   onResize({ screen, viewport } = {}) {
     if (screen) this.screen = screen;
@@ -492,7 +537,9 @@ class Media {
       }
     }
     this.scale = this.screen.height / 1500;
-    this.plane.scale.y = (this.viewport.height * (900 * this.scale)) / this.screen.height;
+    const labelReserve = this.text && !this.labelInside ? 0.24 : 0;
+    const cardHeight = 900 * (1 - labelReserve);
+    this.plane.scale.y = (this.viewport.height * cardHeight * this.scale) / this.screen.height;
     this.plane.scale.x = (this.viewport.width * (700 * this.scale)) / this.screen.width;
     this.plane.program.uniforms.uPlaneSizes.value = [this.plane.scale.x, this.plane.scale.y];
     this.padding = 2;
@@ -501,6 +548,7 @@ class Media {
     this.x = this.width * this.index;
     if (this.title) {
       this.title.updateLayout();
+      this.title.syncToPlane(this.plane);
     }
   }
 }
@@ -532,6 +580,8 @@ class App {
     this.labelInside = labelInside;
     this.duplicateItems = duplicateItems;
     this.itemCount = 0;
+    this.hasLabelsBelow =
+      !labelInside && (items || []).some(item => item && item.text);
     this.scrollBase = 0;
     this.scrollTravel = 0;
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
@@ -619,6 +669,11 @@ class App {
         loopItems: this.duplicateItems
       });
     });
+    this.medias.forEach(media => {
+      if (media.title) {
+        media.title.attachToScene(this.scene);
+      }
+    });
   }
   onTouchDown(e) {
     this.isDown = true;
@@ -662,6 +717,7 @@ class App {
     const height = 2 * Math.tan(fov / 2) * this.camera.position.z;
     const width = height * this.camera.aspect;
     this.viewport = { width, height };
+    this.scene.position.y = this.hasLabelsBelow ? height * 0.1 : 0;
     if (this.medias) {
       this.medias.forEach(media => media.onResize({ screen: this.screen, viewport: this.viewport }));
     }

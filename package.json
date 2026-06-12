@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:static": "npm run build:story-stack && vite",
     "build": "node scripts/build-site.mjs",
     "build:story-stack": "vite build",
     "typecheck": "tsc -b",

@@ -3,9 +3,25 @@ import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 
+const storyStackBundlePattern =
+  /assets\/story-stack\/story-stack\.js(\?v=\d+)?/
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    {
+      name: "story-stack-dev-entry",
+      apply: "serve",
+      transformIndexHtml(html) {
+        return html.replace(
+          storyStackBundlePattern,
+          "/src/story-stack-mount.tsx"
+        )
+      },
+    },
+  ],
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
   },

@@ -1,3 +1,5 @@
+const FREELANCER_ASSET_VERSION = '4';
+
 const GALLERY_BACKGROUNDS = [
   'assets/background-color-01.jpg',
   'assets/background-color-02.jpg',
@@ -5,11 +7,13 @@ const GALLERY_BACKGROUNDS = [
   'assets/background-color-04.jpg'
 ];
 
+const withAssetVersion = path => `${path}?v=${FREELANCER_ASSET_VERSION}`;
+
 const FREELANCER_OVERLAY_PATHS = Object.keys(
   import.meta.glob('../../assets/freelancer/freelancer-*.png', { eager: false })
 )
   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-  .map(filePath => `assets/freelancer/${filePath.split('/').pop()}`);
+  .map(filePath => withAssetVersion(`assets/freelancer/${filePath.split('/').pop()}`));
 
 export const FREELANCER_GALLERY_ITEMS = FREELANCER_OVERLAY_PATHS.length
   ? FREELANCER_OVERLAY_PATHS.map((overlay, index) => ({
@@ -19,6 +23,6 @@ export const FREELANCER_GALLERY_ITEMS = FREELANCER_OVERLAY_PATHS.length
   : [
       {
         image: GALLERY_BACKGROUNDS[0],
-        overlay: 'assets/freelancer/freelancer-01.png'
+        overlay: withAssetVersion('assets/freelancer/freelancer-01.png')
       }
     ];

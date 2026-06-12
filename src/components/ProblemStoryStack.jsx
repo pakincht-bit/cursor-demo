@@ -12,16 +12,18 @@ const PAYMENT_BENTO_CARDS = [
     size: 'large',
     backgroundDecor: 'fastwork-card',
     color: '#ffffff',
-    title: 'Prepaid credit',
-    description: 'Top up wallet balance and pay from available credit.'
+    title: "Prepaid team's credit",
+    description:
+      "No more having to advance the payment out of your pocket. Top up credit for your team to use together on all team's order."
   },
   {
     id: 'bank-account',
     size: 'compact',
     backgroundDecor: 'thai-banks',
     color: '#ffffff',
-    title: 'Bank & PromptPay',
-    description: 'Pay from your registered business bank account, or top up instantly with PromptPay.'
+    title: 'Bank & Promptpay',
+    description:
+      'Pay from your registered business bank account, or pay via PromptPay QR'
   },
   {
     id: 'credit-card',
@@ -37,7 +39,8 @@ const PAYMENT_BENTO_CARDS = [
     backgroundDecor: 'credit-invoice',
     color: '#ffffff',
     title: 'Credit terms',
-    description: 'Pay on net-30 to net-90 invoicing for enterprise teams.'
+    description:
+      'Pre-paid does not work for you? Contact our enterprise team to pay with net 30 to net 90 invoicing.'
   }
 ];
 
@@ -114,8 +117,7 @@ function getBridgeTargetPoint(card, badge) {
   };
 }
 
-function getBridgeScrollProgress(card) {
-  const scrollTop = window.scrollY;
+function getBridgePinMetrics(card) {
   const cardTop = getDocumentOffsetTop(card);
   const viewport = window.innerHeight;
   const scroller = card.closest('.scroll-stack-scroller');
@@ -124,13 +126,18 @@ function getBridgeScrollProgress(card) {
   const pinEnd = endElement
     ? getDocumentOffsetTop(endElement) - viewport * 0.5
     : pinStart + viewport * 0.85;
-
-  const animStart = pinStart;
   const animEnd = Math.min(pinStart + viewport * 0.72, pinEnd);
 
-  if (scrollTop <= animStart) return 0;
+  return { pinStart, pinEnd, animEnd };
+}
+
+function getBridgeScrollProgress(card) {
+  const scrollTop = window.scrollY;
+  const { pinStart, animEnd } = getBridgePinMetrics(card);
+
+  if (scrollTop <= pinStart) return 0;
   if (scrollTop >= animEnd) return 1;
-  return (scrollTop - animStart) / (animEnd - animStart);
+  return (scrollTop - pinStart) / (animEnd - pinStart);
 }
 
 function BridgeConvergenceLines({ svgRef }) {
@@ -151,8 +158,8 @@ function BridgeConvergenceLines({ svgRef }) {
           </feMerge>
         </filter>
         <radialGradient id="story-bridge-core-glow" cx="50%" cy="38%" r="50%">
-          <stop offset="0%" stopColor="#84b5ff" stopOpacity="0.35" />
-          <stop offset="35%" stopColor="#ae8eff" stopOpacity="0.16" />
+          <stop offset="0%" stopColor="#ae8eff" stopOpacity="0.28" />
+          <stop offset="35%" stopColor="#ffcca5" stopOpacity="0.12" />
           <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
         </radialGradient>
         {BRIDGE_LINES.map(line => (
@@ -269,10 +276,14 @@ function BridgeScene({ scene }) {
         const y2 = -4 + (target.y + 4) * lineEased;
         el.setAttribute('x2', String(x2));
         el.setAttribute('y2', String(y2));
-        el.setAttribute('opacity', String(line.opacity * Math.min(1, 0.25 + lineEased * 0.85)));
+        el.setAttribute(
+          'opacity',
+          String(line.opacity * Math.min(1, 0.25 + lineEased * 0.85))
+        );
       });
 
       badge.style.setProperty('--bridge-badge-glow', String(lineEased));
+      card.style.setProperty('--bridge-bg-progress', String(lineEased));
 
       if (headline) {
         headline.style.setProperty('--bridge-headline-opacity', String(textEased));
@@ -507,7 +518,7 @@ const SCENES = [
     headlinePrefix: 'Your whole team can',
     headlineRotating: ['hire', 'pay', 'share'],
     kicker:
-      'Invite members to hire freelancers on shared business profiles, use team payment methods, and keep documents in one place.',
+      "Invite your team to hire freelancers together in a shared workspace, use shared team's credit, and keep all documents in one place.",
     tone: 'benefit',
     visual: 'team-platform'
   },

@@ -195,10 +195,11 @@ testimonialCards.forEach((card) => {
   if (!hero || !media) return;
 
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const coarsePointerQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
 
   let isInView = false;
   let ticking = false;
-  let enabled = !motionQuery.matches;
+  let enabled = !motionQuery.matches && !coarsePointerQuery.matches;
 
   function getMaxOffset() {
     const value = getComputedStyle(document.documentElement)

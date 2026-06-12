@@ -8,6 +8,10 @@ function isMobileViewport() {
   return window.innerWidth <= MOBILE_BREAKPOINT;
 }
 
+function prefersNativeTouchScroll() {
+  return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+}
+
 function isMobileFlowCard(card) {
   return isMobileViewport() && card.classList.contains('story-scene--payment-bento');
 }
@@ -190,7 +194,44 @@ const ScrollStack = ({
     ]
   );
 
+  const setupNativeScroll = useCallback(() => {
+    const scroller = scrollerRef.current;
+    const scrollTarget = useWindowScroll ? window : scroller;
+    if (!scrollTarget) return null;
+
+    let scrollRaf = null;
+
+    const getScrollTop = () =>
+      useWindowScroll ? window.scrollY : scrollerRef.current?.scrollTop ?? 0;
+
+    const scheduleUpdate = () => {
+      if (scrollRaf !== null) return;
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = null;
+        updateCardTransforms(getScrollTop());
+      });
+    };
+
+    const onScroll = () => {
+      scheduleUpdate();
+    };
+
+    scrollTarget.addEventListener('scroll', onScroll, { passive: true });
+    scheduleUpdate();
+
+    return () => {
+      scrollTarget.removeEventListener('scroll', onScroll);
+      if (scrollRaf !== null) {
+        cancelAnimationFrame(scrollRaf);
+      }
+    };
+  }, [updateCardTransforms, useWindowScroll]);
+
   const setupLenis = useCallback(() => {
+    if (prefersNativeTouchScroll()) {
+      return setupNativeScroll();
+    }
+
     if (useWindowScroll) {
       document.documentElement.classList.add('lenis', 'lenis-smooth');
 
@@ -198,12 +239,10 @@ const ScrollStack = ({
         duration: 1.2,
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        touchMultiplier: 2,
         infinite: false,
         wheelMultiplier: 1,
         lerp: 0.1,
-        syncTouch: true,
-        syncTouchLerp: 0.075
+        syncTouch: false
       });
 
       const raf = time => {
@@ -226,16 +265,12 @@ const ScrollStack = ({
       duration: 1.2,
       easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
-      touchMultiplier: 2,
       infinite: false,
-      gestureOrientationHandler: true,
+      gestureOrientation: 'vertical',
       normalizeWheel: true,
       wheelMultiplier: 1,
-      touchInertiaMultiplier: 35,
       lerp: 0.1,
-      syncTouch: true,
-      syncTouchLerp: 0.075,
-      touchInertia: 0.6
+      syncTouch: false
     });
 
     const raf = time => {
@@ -247,7 +282,7 @@ const ScrollStack = ({
 
     lenisRef.current = lenis;
     return lenis;
-  }, [updateCardTransforms, useWindowScroll]);
+  }, [updateCardTransforms, useWindowScroll, setupNativeScroll]);
 
   useLayoutEffect(() => {
     const scroller = scrollerRef.current;
@@ -256,18 +291,20 @@ const ScrollStack = ({
     const cards = Array.from(scroller.querySelectorAll('.scroll-stack-card'));
     cardsRef.current = cards;
 
+    const useLightweightTransforms = prefersNativeTouchScroll();
+
     cards.forEach((card, i) => {
       if (i < cards.length - 1) {
         card.style.marginBottom = `${itemDistance}px`;
       }
-      card.style.willChange = 'transform';
+      card.style.willChange = useLightweightTransforms ? 'auto' : 'transform';
       card.style.transformOrigin = 'center top';
       card.style.backfaceVisibility = 'hidden';
       card.style.transform = 'translate3d(0, 0, 0)';
     });
 
     measureLayout();
-    setupLenis();
+    const scrollController = setupLenis();
     updateCardTransforms(useWindowScroll ? window.scrollY : scroller.scrollTop);
 
     const handleResize = () => {
@@ -281,11 +318,15 @@ const ScrollStack = ({
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      if (typeof scrollController === 'function') {
+        scrollController();
+      }
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
       if (lenisRef.current) {
         lenisRef.current.destroy();
+        lenisRef.current = null;
       }
       if (useWindowScroll) {
         document.documentElement.classList.remove('lenis', 'lenis-smooth');

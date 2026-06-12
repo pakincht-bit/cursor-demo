@@ -21,10 +21,45 @@
 }
 
 .story-scene--bridge {
+  --bridge-bg-progress: 0;
   position: relative;
   isolation: isolate;
   overflow: hidden;
   background: var(--bg-card, #fff);
+}
+
+.story-scene--bridge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--bridge-bg-progress);
+  background:
+    radial-gradient(ellipse 72% 52% at 50% 0%, rgba(174, 142, 255, 0.18), transparent 72%),
+    radial-gradient(ellipse 50% 42% at 88% 18%, rgba(255, 204, 165, 0.22), transparent 74%),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.88) 46%,
+      #fff 72%
+    );
+}
+
+.story-scene--bridge::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 0;
+  height: 38%;
+  pointer-events: none;
+  opacity: var(--bridge-bg-progress);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.72) 52%,
+    #fff 100%
+  );
 }
 
 .story-scene__bridge-backdrop {
@@ -781,5 +816,9 @@
   .story-scene__bridge-headline-wrap {
     opacity: 1;
     transform: none;
+  }
+
+  .story-scene--bridge {
+    --bridge-bg-progress: 1;
   }
 }

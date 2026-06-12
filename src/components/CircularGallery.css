@@ -9,6 +9,7 @@
 .circular-gallery--static {
   cursor: default;
   touch-action: auto;
+  overflow: visible;
 }
 
 .circular-gallery:active {

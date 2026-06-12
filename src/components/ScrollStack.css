@@ -11,10 +11,9 @@ html.lenis-smooth {
   overflow-x: visible;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
-  will-change: scroll-position;
 }
 
 .scroll-stack-scroller--window {
@@ -45,7 +44,6 @@ html.lenis-smooth {
 
 .scroll-stack-card {
   transform-origin: center top;
-  will-change: transform, opacity;
   backface-visibility: hidden;
   box-sizing: border-box;
   position: relative;
@@ -53,6 +51,12 @@ html.lenis-smooth {
   max-width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .scroll-stack-card {
+    contain: layout style paint;
+  }
 }
 
 .scroll-stack-card.story-scene--gallery,
