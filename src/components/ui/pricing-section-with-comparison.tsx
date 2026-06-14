@@ -1,5 +1,4 @@
-import { useState } from "react"
-import { Check, Minus, MoveRight, PhoneCall } from "lucide-react"
+import { Check, Minus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -7,6 +6,8 @@ import { cn } from "@/lib/utils"
 import "./pricing-section.css"
 
 const PRIMARY_CTA_URL = "https://form.typeform.com/to/YDvQlvrN"
+const PERSONAL_CTA_URL = "https://fastwork.co/"
+const ENTERPRISE_CTA_URL = "https://business.fastwork.co/"
 
 type FeatureValue = boolean | string | string[]
 
@@ -17,7 +18,8 @@ const PLANS = [
     teamSize: "1 person",
     description:
       "For individuals. Hire freelancers on your own — pay per project before work begins.",
-    cta: "Get started",
+    cta: "Sign up",
+    ctaUrl: PERSONAL_CTA_URL,
     ctaVariant: "outline" as const,
     highlighted: false,
   },
@@ -27,7 +29,8 @@ const PLANS = [
     teamSize: "2–50 teammates",
     description:
       "Self-serve. For SMEs and mid-market teams that want to hire freelancers as a business, not as individuals.",
-    cta: "Set up your business",
+    cta: "Submit",
+    ctaUrl: PRIMARY_CTA_URL,
     ctaVariant: "primary" as const,
     highlighted: true,
   },
@@ -38,6 +41,7 @@ const PLANS = [
     description:
       "Sales-led. For large businesses with procurement, legal, and security review requirements.",
     cta: "Talk to Enterprise team",
+    ctaUrl: ENTERPRISE_CTA_URL,
     ctaVariant: "outline" as const,
     highlighted: false,
   },
@@ -155,38 +159,59 @@ function FeatureName({
   )
 }
 
-function Pricing() {
-  const [activePlan, setActivePlan] = useState<PlanId>("business")
+function PlanCta({ plan }: { plan: (typeof PLANS)[number] }) {
+  const className = cn(
+    "pricing-section__cta",
+    plan.ctaVariant === "primary"
+      ? "pricing-section__cta--primary"
+      : "pricing-section__cta--outline"
+  )
 
+  return (
+    <Button asChild variant={plan.ctaVariant === "primary" ? "default" : "outline"} className={className}>
+      <a href={plan.ctaUrl}>{plan.cta}</a>
+    </Button>
+  )
+}
+
+function Pricing() {
   return (
     <section
       className="pricing-section"
       id="tiers"
       aria-label="Pricing plans"
-      data-active-plan={activePlan}
     >
       <div className="pricing-section__inner">
-        <div
-          className="pricing-section__plan-toggle"
-          role="tablist"
-          aria-label="Choose a plan"
-        >
+        <div className="pricing-section__cards">
           {PLANS.map((plan) => (
-            <button
+            <article
               key={plan.id}
-              type="button"
-              role="tab"
-              id={`pricing-tab-${plan.id}`}
-              aria-selected={activePlan === plan.id}
-              aria-controls={`pricing-panel-${plan.id}`}
+              data-plan={plan.id}
               className={cn(
-                "pricing-section__plan-toggle-btn",
-                activePlan === plan.id && "pricing-section__plan-toggle-btn--active"
+                "pricing-section__card",
+                plan.highlighted && "pricing-section__card--recommended",
+                plan.id === "enterprise" && "pricing-section__card--enterprise"
               )}
-              onClick={() => setActivePlan(plan.id)}
             >
-              {plan.id === "personal" ? plan.name : plan.name.replace(/^For /, "")}
-            </button>
+              <div className="pricing-section__card-header">
+                <span className="pricing-section__plan-badge">{plan.teamSize}</span>
+                <h3 className="pricing-section__plan-title">{plan.name}</h3>
+                <p className="pricing-section__plan-desc">{plan.description}</p>
+                <PlanCta plan={plan} />
+              </div>
+              <ul className="pricing-section__card-features">
+                {FEATURES.map((feature) => (
+                  <li key={feature.name} className="pricing-section__card-feature">
+                    <span className="pricing-section__card-feature-name">
+                      <FeatureName name={feature.name} subItems={feature.subItems} />
+                    </span>
+                    <span className="pricing-section__card-feature-value">
+                      <FeatureCell value={feature.values[plan.id]} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </article>
           ))}
         </div>
 
@@ -197,9 +222,7 @@ function Pricing() {
             {PLANS.map((plan) => (
               <div
                 key={plan.id}
-                id={plan.id === "enterprise" ? "enterprise" : `pricing-panel-${plan.id}`}
-                role="tabpanel"
-                aria-labelledby={`pricing-tab-${plan.id}`}
+                id={plan.id === "enterprise" ? "enterprise" : undefined}
                 data-plan={plan.id}
                 className={cn(
                   "pricing-section__plan-col",
@@ -210,36 +233,7 @@ function Pricing() {
                 <span className="pricing-section__plan-badge">{plan.teamSize}</span>
                 <h3 className="pricing-section__plan-title">{plan.name}</h3>
                 <p className="pricing-section__plan-desc">{plan.description}</p>
-                {plan.ctaVariant === "primary" ? (
-                  <Button
-                    asChild
-                    variant="default"
-                    className="pricing-section__cta pricing-section__cta--primary gap-2"
-                  >
-                    <a href={PRIMARY_CTA_URL}>
-                      {plan.cta}
-                      <MoveRight className="h-4 w-4" />
-                    </a>
-                  </Button>
-                ) : (
-                  <Button
-                    asChild={plan.id === "personal"}
-                    variant="outline"
-                    className="pricing-section__cta pricing-section__cta--outline gap-2"
-                  >
-                    {plan.id === "personal" ? (
-                      <a href={PRIMARY_CTA_URL}>
-                        {plan.cta}
-                        <MoveRight className="h-4 w-4" />
-                      </a>
-                    ) : (
-                      <>
-                        {plan.cta}
-                        <PhoneCall className="h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                )}
+                <PlanCta plan={plan} />
               </div>
             ))}
           </div>

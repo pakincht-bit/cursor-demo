@@ -12,8 +12,8 @@ function prefersNativeTouchScroll() {
   return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 }
 
-function isMobileFlowCard(card) {
-  return isMobileViewport() && card.classList.contains('story-scene--payment-bento');
+function shouldSkipStackPin() {
+  return isMobileViewport();
 }
 
 export const ScrollStackItem = ({ children, itemClassName = '' }) => (
@@ -113,7 +113,7 @@ const ScrollStack = ({
       cards.forEach((card, i) => {
         if (!card) return;
 
-        if (isMobileFlowCard(card)) {
+        if (shouldSkipStackPin()) {
           card.style.transform = 'none';
           card.style.filter = 'none';
           card.style.visibility = 'visible';

@@ -29,14 +29,16 @@ html.lenis-smooth {
 }
 
 .scroll-stack-scroller--window .scroll-stack-inner {
-  padding: 0 0 32vh;
+  padding: 0 0 100px;
+}
+
+@media (min-width: 769px) {
+  .scroll-stack-scroller--window .scroll-stack-inner {
+    padding-bottom: 220px;
+  }
 }
 
 @media (max-width: 768px) {
-  .scroll-stack-scroller--window .scroll-stack-inner {
-    padding-bottom: 12vh;
-  }
-
   .scroll-stack-card.story-scene--payment-bento {
     margin-bottom: clamp(48px, 10vw, 80px) !important;
   }

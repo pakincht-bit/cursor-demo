@@ -45,11 +45,6 @@ const PAYMENT_BENTO_CARDS = [
   }
 ];
 
-const GALLERY_STACK = {
-  stackPositionPx: 0,
-  itemStackDistance: 0
-};
-
 function getDocumentOffsetTop(element) {
   let top = 0;
   let el = element;
@@ -62,23 +57,39 @@ function getDocumentOffsetTop(element) {
   return top;
 }
 
-function getGalleryScrollProgress(card) {
-  const cards = card.parentElement?.querySelectorAll('.scroll-stack-card');
-  if (!cards?.length) return 0;
-
-  const scrollTop = window.scrollY;
+function getStoryStackCardPinStart(card, cards, cardIndex) {
   const cardTop = getDocumentOffsetTop(card);
-  const pinStart = cardTop - GALLERY_STACK.stackPositionPx;
-  const nextCard = cards[1];
-  const pinEnd = nextCard
-    ? getDocumentOffsetTop(nextCard) -
-      GALLERY_STACK.stackPositionPx -
-      GALLERY_STACK.itemStackDistance
-    : pinStart + window.innerHeight * 0.85;
+  const stackPositionPx = parseStackPositionPx(STORY_STACK_PIN.stackPosition);
+  return cardTop - stackPositionPx - STORY_STACK_PIN.itemStackDistance * cardIndex;
+}
 
-  if (scrollTop <= pinStart) return 0;
-  if (scrollTop >= pinEnd) return 1;
-  return (scrollTop - pinStart) / (pinEnd - pinStart);
+function getGalleryScrollMetrics(card) {
+  const viewport = window.innerHeight;
+  const scroller = card.closest('.scroll-stack-scroller');
+  const cards = scroller ? Array.from(scroller.querySelectorAll('.scroll-stack-card')) : [card];
+  const cardIndex = Math.max(0, cards.indexOf(card));
+  const pinStart = getStoryStackCardPinStart(card, cards, cardIndex);
+  const nextCard = cards[cardIndex + 1];
+  const animEnd = nextCard
+    ? getStoryStackCardPinStart(nextCard, cards, cardIndex + 1)
+    : pinStart + viewport;
+
+  // Start as the gallery card enters the viewport, before it reaches its pin point.
+  const animStart = pinStart - viewport;
+
+  return { animStart, animEnd };
+}
+
+function getGalleryScrollProgress(card) {
+  const scrollTop = window.scrollY;
+  const { animStart, animEnd } = getGalleryScrollMetrics(card);
+  const range = animEnd - animStart;
+
+  if (range <= 0) return scrollTop >= animStart ? 1 : 0;
+  if (scrollTop <= animStart) return 0;
+  if (scrollTop >= animEnd) return 1;
+
+  return (scrollTop - animStart) / range;
 }
 
 const BRIDGE_GRADIENT_STOPS = [
@@ -150,7 +161,7 @@ const BRIDGE_LINES = BRIDGE_LINE_DEFS.map(line => {
   };
 });
 
-const BRIDGE_LOGO_SRC = 'assets/Logo-black.svg';
+const BRIDGE_LOGO_SRC = 'assets/logos/business - on light.svg';
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
@@ -170,27 +181,45 @@ function getBridgeTargetPoint(card, badge) {
   };
 }
 
+const BRIDGE_LINE_CONNECT_END = 0.4;
+
+const STORY_STACK_PIN = {
+  stackPosition: '0%',
+  itemStackDistance: 0
+};
+
+function parseStackPositionPx(value) {
+  if (typeof value === 'string' && value.includes('%')) {
+    return (parseFloat(value) / 100) * window.innerHeight;
+  }
+
+  return parseFloat(value) || 0;
+}
+
 function getBridgePinMetrics(card) {
-  const cardTop = getDocumentOffsetTop(card);
   const viewport = window.innerHeight;
   const scroller = card.closest('.scroll-stack-scroller');
   const endElement = scroller?.querySelector('.scroll-stack-end');
-  const pinStart = cardTop;
+  const cards = scroller ? Array.from(scroller.querySelectorAll('.scroll-stack-card')) : [];
+  const cardIndex = Math.max(0, cards.indexOf(card));
+  const pinStart = getStoryStackCardPinStart(card, cards, cardIndex);
   const pinEnd = endElement
     ? getDocumentOffsetTop(endElement) - viewport * 0.5
-    : pinStart + viewport * 0.85;
-  const animEnd = Math.min(pinStart + viewport * 0.72, pinEnd);
+    : pinStart + viewport * 1.2;
 
-  return { pinStart, pinEnd, animEnd };
+  return { pinStart, pinEnd };
 }
 
 function getBridgeScrollProgress(card) {
   const scrollTop = window.scrollY;
-  const { pinStart, animEnd } = getBridgePinMetrics(card);
+  const { pinStart, pinEnd } = getBridgePinMetrics(card);
+  const range = pinEnd - pinStart;
 
+  if (range <= 0) return scrollTop >= pinStart ? 1 : 0;
   if (scrollTop <= pinStart) return 0;
-  if (scrollTop >= animEnd) return 1;
-  return (scrollTop - pinStart) / (animEnd - pinStart);
+  if (scrollTop >= pinEnd) return 1;
+
+  return (scrollTop - pinStart) / range;
 }
 
 function BridgeConvergenceLines({ svgRef }) {
@@ -267,7 +296,7 @@ function BridgeLogoBadge({ badgeRef }) {
     <div ref={badgeRef} className="story-scene__bridge-badge">
       <img
         src={BRIDGE_LOGO_SRC}
-        alt="fastwork"
+        alt="fastwork for business"
         className="story-scene__bridge-badge-logo"
         draggable="false"
       />
@@ -283,7 +312,7 @@ function BridgeScene({ scene }) {
 
   useEffect(() => {
     let frame = 0;
-    const lineConnectEnd = 0.76;
+    const lineConnectEnd = BRIDGE_LINE_CONNECT_END;
 
     const updateScene = progress => {
       const card = cardRef.current?.closest('.scroll-stack-card');
@@ -509,8 +538,10 @@ function isTeamsSectionActive(card) {
 
   const rect = card.getBoundingClientRect();
   const viewportHeight = window.innerHeight;
+  const visibleHeight = Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+  const minVisible = Math.min(rect.height * 0.45, viewportHeight * 0.38);
 
-  return rect.top <= 8 && rect.bottom >= viewportHeight * 0.72;
+  return rect.top <= 8 && rect.height >= 120 && visibleHeight >= minVisible;
 }
 
 function useTeamUserBadge(sectionRef) {
@@ -845,7 +876,7 @@ export default function ProblemStoryStack() {
   return (
     <ScrollStack
       className="problem-story-stack"
-      itemDistance={180}
+      itemDistance={48}
       itemStackDistance={0}
       stackPosition="0%"
       baseScale={1}

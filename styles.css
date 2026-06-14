@@ -300,7 +300,7 @@ button {
 }
 
 .nav.is-scrolled .nav__logo-img {
-  height: 26px;
+  height: 20px;
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
@@ -330,7 +330,7 @@ button {
 
 .nav__logo-img {
   display: block;
-  height: 30px;
+  height: 22px;
   width: auto;
   transition: height 350ms cubic-bezier(0.4, 0, 1, 1);
 }
@@ -405,7 +405,7 @@ button {
   right: 0;
   bottom: 0;
   z-index: 5;
-  height: clamp(140px, 22vh, 280px);
+  height: clamp(72px, 11vh, 140px);
   pointer-events: none;
   background: linear-gradient(
     180deg,
@@ -579,8 +579,8 @@ button {
 .hero__logo {
   display: block;
   width: auto;
-  height: 40px;
-  margin: 0 auto 24px;
+  height: clamp(22px, 2.8vw, 28px);
+  margin: 0 auto clamp(16px, 3vw, 24px);
 }
 
 .hero__title {
@@ -605,6 +605,10 @@ button {
 .hero__title-line--second {
   display: block;
   white-space: nowrap;
+}
+
+.hero__title-line-part {
+  display: inline;
 }
 
 .hero--wayflyer .hero__subtitle {
@@ -734,30 +738,31 @@ button {
 }
 
 .hero--wayflyer:has(.hero__media-frame--platform) .hero__media {
-  overflow: hidden;
+  overflow: visible;
   -webkit-mask-image: none;
   mask-image: none;
 }
 
 .hero__media-frame--platform {
-  overflow: hidden;
+  overflow: visible;
   border: none;
+  border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
 
 .hero__platform-visual {
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .hero__media-frame--platform .story-scene__teams-stage {
   max-width: none;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .hero__media-frame--platform .story-scene__team-badges {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .hero__media-frame--platform .story-scene__teams-mockup {
@@ -819,6 +824,38 @@ button {
   margin-left: 3px;
 }
 
+@media (min-width: 769px) {
+  .hero--wayflyer {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    padding-bottom: 0;
+    box-sizing: border-box;
+  }
+
+  .hero--wayflyer .hero__inner {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero__content {
+    flex-shrink: 0;
+  }
+
+  .hero__media {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .hero--wayflyer:has(.hero__media-frame--platform) .hero__media {
+    overflow: visible;
+  }
+}
+
 @media (min-width: 768px) {
   .hero__inner {
     padding-top: 64px;
@@ -826,11 +863,6 @@ button {
 
   .hero__content {
     margin-bottom: 56px;
-  }
-
-  .hero__logo {
-    height: 48px;
-    margin-bottom: 28px;
   }
 
   .hero__title {
@@ -2944,6 +2976,37 @@ body.is-modal-open {
     display: none;
   }
 
+  .nav.is-scrolled .nav__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    width: min(100%, calc(100vw - 2 * var(--hero-px)));
+    max-width: calc(100vw - 2 * var(--hero-px));
+    padding-inline: 12px;
+    gap: 10px;
+  }
+
+  .nav.is-scrolled .nav__logo {
+    min-width: 0;
+  }
+
+  .nav.is-scrolled .nav__logo-img {
+    height: 18px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .nav.is-scrolled .nav__actions {
+    flex-shrink: 0;
+  }
+
+  .nav.is-scrolled .btn--pill.btn--nav {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
   .feature-block,
   .feature-block--reverse {
     grid-template-columns: 1fr;
@@ -2974,11 +3037,57 @@ body.is-modal-open {
     padding-top: clamp(32px, 8svh, 64px);
     padding-bottom: clamp(16px, 4vw, 28px);
     box-sizing: border-box;
+    overflow-x: clip;
   }
 
   .hero__content {
     margin-bottom: clamp(36px, 7vw, 56px);
     flex-shrink: 0;
+    overflow-x: clip;
+  }
+
+  .hero__title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.12em;
+    width: 100%;
+    max-width: 100%;
+    margin-inline: 0;
+    font-size: clamp(2.125rem, 8.5vw, 3rem);
+    line-height: 1;
+    overflow: visible;
+  }
+
+  .hero__title-ending--desktop {
+    display: none;
+  }
+
+  .hero__title-space-desktop {
+    display: none;
+  }
+
+  .hero__title-line--second {
+    display: contents;
+  }
+
+  .hero__title-line-part,
+  .hero__title-accent {
+    display: block;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .hero__title-line {
+    width: auto;
+    max-width: 100%;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .hero__title-accent {
+    line-height: 1;
+    padding-block: 0;
   }
 
   .hero__media {
@@ -2989,7 +3098,7 @@ body.is-modal-open {
     mask-image: none;
   }
 
-  .hero__media-frame {
+  .hero__media-frame:not(.hero__media-frame--platform) {
     border-radius: var(--radius-md);
   }
 
@@ -2998,14 +3107,14 @@ body.is-modal-open {
   }
 
   .hero--wayflyer:has(.hero__media-frame--platform) .hero__media {
-    width: 100vw;
-    max-width: 100vw;
-    margin-inline: calc(50% - 50vw);
+    width: min(100%, 90vw);
+    max-width: min(var(--hero-media-max), 90vw);
+    margin-inline: auto;
   }
 
   .hero__media-frame--platform .story-scene__teams-mockup-wrap {
-    width: 112%;
-    margin-inline: -6%;
+    width: 100%;
+    margin-inline: 0;
   }
 }
 
@@ -3018,9 +3127,9 @@ body.is-modal-open {
     margin-bottom: clamp(32px, 6vw, 48px);
   }
 
-  .hero__media-frame--platform .story-scene__teams-mockup-wrap {
-    width: 118%;
-    margin-inline: -9%;
+  .hero--wayflyer:has(.hero__media-frame--platform) .hero__media {
+    width: min(100%, 86vw);
+    max-width: 86vw;
   }
 
   .hero__trust-divider {
