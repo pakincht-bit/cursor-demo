@@ -15,6 +15,7 @@ const PLANS = [
   {
     id: "personal",
     name: "Fastwork",
+    logoSrc: "assets/logos/individual - on light.svg",
     teamSize: "1 person",
     description:
       "For individuals. Hire freelancers on your own — pay per project before work begins.",
@@ -26,6 +27,7 @@ const PLANS = [
   {
     id: "business",
     name: "For Business",
+    logoSrc: "assets/logos/business - on light.svg",
     teamSize: "2–50 teammates",
     description:
       "Self-serve. For SMEs and mid-market teams that want to hire freelancers as a business, not as individuals.",
@@ -37,10 +39,11 @@ const PLANS = [
   {
     id: "enterprise",
     name: "For Enterprise",
+    logoSrc: "assets/logos/enterprise - on light.svg",
     teamSize: "50+ employees",
     description:
       "Sales-led. For large businesses with procurement, legal, and security review requirements.",
-    cta: "Contract Enterprise team",
+    cta: "Contact Enterprise team",
     ctaUrl: ENTERPRISE_CTA_URL,
     ctaVariant: "outline" as const,
     highlighted: false,
@@ -159,6 +162,18 @@ function FeatureName({
   )
 }
 
+function PlanHeaderLogo({ plan }: { plan: (typeof PLANS)[number] }) {
+  return (
+    <h3 className="pricing-section__plan-title">
+      <img
+        src={plan.logoSrc}
+        alt={plan.name}
+        className="pricing-section__plan-logo"
+      />
+    </h3>
+  )
+}
+
 function PlanCta({ plan }: { plan: (typeof PLANS)[number] }) {
   const className = cn(
     "pricing-section__cta",
@@ -194,8 +209,8 @@ function Pricing() {
               )}
             >
               <div className="pricing-section__card-header">
-                <span className="pricing-section__plan-badge">{plan.teamSize}</span>
-                <h3 className="pricing-section__plan-title">{plan.name}</h3>
+                <p className="pricing-section__plan-eyebrow">{plan.teamSize}</p>
+                <PlanHeaderLogo plan={plan} />
                 <p className="pricing-section__plan-desc">{plan.description}</p>
                 <PlanCta plan={plan} />
               </div>
@@ -230,8 +245,8 @@ function Pricing() {
                   plan.id === "enterprise" && "pricing-section__plan-col--enterprise"
                 )}
               >
-                <span className="pricing-section__plan-badge">{plan.teamSize}</span>
-                <h3 className="pricing-section__plan-title">{plan.name}</h3>
+                <p className="pricing-section__plan-eyebrow">{plan.teamSize}</p>
+                <PlanHeaderLogo plan={plan} />
                 <p className="pricing-section__plan-desc">{plan.description}</p>
                 <PlanCta plan={plan} />
               </div>

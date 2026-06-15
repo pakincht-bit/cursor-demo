@@ -1740,8 +1740,8 @@ button {
     height: 120px;
   }
 
-  .testimonial-card__logo-img {
-    height: 72px;
+  .testimonial-card:not(.is-active) .testimonial-card__logo-img {
+    height: 88px;
   }
 }
 
@@ -1898,6 +1898,11 @@ button {
   object-position: center;
   color: #b5b5b5;
   opacity: 0.88;
+}
+
+.testimonial-card:not(.is-active) .testimonial-card__logo-img {
+  height: 160px;
+  max-width: min(320px, 68%);
 }
 
 .testimonial-card__content {
