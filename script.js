@@ -1,4 +1,5 @@
 import { initAurora } from "./aurora.js";
+import { TEAM_CURSOR_POINTER } from "./src/constants/teamCursorPointer.js";
 
 (function initNavScroll() {
   const nav = document.getElementById("siteNav");
@@ -364,8 +365,6 @@ const HERO_TEAM_ROLES = [
   { role: "Legal", color: "#7B61FF", position: 5 },
   { role: "Marketing", color: "#FFB508", position: 6 },
 ];
-
-const TEAM_CURSOR_POINTER = `<svg class="story-scene__team-cursor-pointer" viewBox="0 0 12 18" fill="none" aria-hidden="true"><path d="M1 1v12.2l3.2-2.3L6.4 16.8l1.6-.8-2.3-5.4h4.8L1 1Z" fill="currentColor" stroke="#fff" stroke-width="1.25" stroke-linejoin="round"/></svg>`;
 
 function createTeamRoleCursor({ role, color, position }) {
   return `<div role="listitem"><div class="story-scene__team-cursor story-scene__team-cursor--${position}" style="--team-cursor-color: ${color}">${TEAM_CURSOR_POINTER}<span class="story-scene__team-cursor-label">${role}</span></div></div>`;

@@ -5,6 +5,7 @@ import { FREELANCER_GALLERY_ITEMS } from './freelancerGalleryItems';
 import MagicBento from './MagicBento';
 import RotatingText from './RotatingText';
 import ScrollStack, { ScrollStackItem } from './ScrollStack';
+import { TEAM_CURSOR_PATH, TEAM_CURSOR_VIEWBOX } from '../constants/teamCursorPointer';
 import './ProblemStoryStack.css';
 
 const PAYMENT_BENTO_CARDS = [
@@ -528,15 +529,15 @@ function TeamCursorGraphic({ label, color, className }) {
     <div className={className} style={{ '--team-cursor-color': color }}>
       <svg
         className="story-scene__team-cursor-pointer"
-        viewBox="0 0 12 18"
+        viewBox={TEAM_CURSOR_VIEWBOX}
         fill="none"
         aria-hidden="true"
       >
         <path
-          d="M1 1v12.2l3.2-2.3L6.4 16.8l1.6-.8-2.3-5.4h4.8L1 1Z"
+          d={TEAM_CURSOR_PATH}
           fill="currentColor"
           stroke="#fff"
-          strokeWidth="1.25"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
       </svg>

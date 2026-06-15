@@ -22,5 +22,9 @@ for (const file of staticFiles) {
 }
 
 cpSync(join(root, "assets"), join(distDir, "assets"), { recursive: true })
+cpSync(join(root, "fonts"), join(distDir, "fonts"), { recursive: true })
+cpSync(join(root, "src/constants"), join(distDir, "src/constants"), {
+  recursive: true,
+})
 
 console.log("Build complete. Output:", distDir)

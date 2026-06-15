@@ -76,10 +76,10 @@ const FEATURES: ComparisonFeature[] = [
     },
   },
   {
-    name: "Account Service coordination",
+    name: "Tax invoice",
     values: {
-      personal: false,
-      business: false,
+      personal: "If freelancer is a legal entity",
+      business: "If freelancer is a legal entity",
       enterprise: true,
     },
   },
@@ -92,18 +92,18 @@ const FEATURES: ComparisonFeature[] = [
     },
   },
   {
-    name: "Tax invoice",
-    values: {
-      personal: "If freelancer is a legal entity",
-      business: "If freelancer is a legal entity",
-      enterprise: true,
-    },
-  },
-  {
     name: "Team dashboard",
     values: {
       personal: false,
       business: true,
+      enterprise: true,
+    },
+  },
+  {
+    name: "Account Service coordination",
+    values: {
+      personal: false,
+      business: false,
       enterprise: true,
     },
   },
@@ -194,9 +194,17 @@ function Pricing() {
     <section
       className="pricing-section"
       id="tiers"
-      aria-label="Pricing plans"
+      aria-labelledby="tiers-heading"
     >
       <div className="pricing-section__inner">
+        <header className="pricing-section__header">
+          <h2 className="pricing-section__heading" id="tiers-heading">
+            Three packages to match
+            <br />
+            how you hire.
+          </h2>
+        </header>
+
         <div className="pricing-section__cards">
           {PLANS.map((plan) => (
             <article

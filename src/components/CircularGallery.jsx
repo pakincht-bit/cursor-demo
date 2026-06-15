@@ -24,9 +24,8 @@ function autoBind(instance) {
   });
 }
 
-const DEFAULT_FONT = 'bold 30px Figtree';
-const DEFAULT_FONT_URL =
-  'https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap';
+const DEFAULT_FONT = '400 30px "Fastwork"';
+const DEFAULT_FONT_URL = 'fonts/fastwork-Bold.ttf';
 const MOBILE_TEXTURE_MAX = 1024;
 
 function prefersLightweightGallery() {
@@ -598,7 +597,7 @@ class App {
       bend,
       textColor = '#ffffff',
       borderRadius = 0,
-      font = 'bold 30px Figtree',
+      font = '400 30px "Fastwork"',
       scrollSpeed = 2,
       scrollEase = 0.05,
       enableWheel = true,
@@ -860,7 +859,7 @@ export default forwardRef(function CircularGallery(
     bend = 3,
     textColor = '#ffffff',
     borderRadius = 0.05,
-    font = 'bold 30px Figtree',
+    font = '400 30px "Fastwork"',
     fontUrl,
     scrollSpeed = 2,
     scrollEase = 0.05,

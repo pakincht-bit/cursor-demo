@@ -337,6 +337,7 @@
 }
 
 .magic-bento .magic-bento-card__title {
+  font-family: var(--font-headline, "Fastwork", "Google Sans", "IBM Plex Sans Thai", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
   font-weight: 600;
   font-size: 1em;
   line-height: 1.2;
