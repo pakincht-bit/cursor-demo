@@ -1,4 +1,4 @@
-import { initAurora } from "./aurora.js";
+import { AURORA_COLOR_STOPS, initAurora } from "./aurora.js";
 import { TEAM_CURSOR_POINTER } from "./src/constants/teamCursorPointer.js";
 
 (function initNavScroll() {
@@ -184,7 +184,7 @@ testimonialCards.forEach((card) => {
 
     const isCoarsePointer = coarsePointerQuery.matches;
     const aurora = initAurora(canvasHost, {
-      colorStops: ["#84B5FF", "#0569FF", "#AE8EFF", "#FFCCA5"],
+      colorStops: AURORA_COLOR_STOPS,
       amplitude: 1.15,
       blend: 0.62,
       speed: 1.0,

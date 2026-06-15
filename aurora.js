@@ -1,4 +1,4 @@
-import { Renderer, Program, Mesh, Color, Triangle } from "https://esm.sh/ogl@1.0.11";
+import { Renderer, Program, Mesh, Triangle } from "https://esm.sh/ogl@1.0.11";
 
 const VERT = `#version 300 es
 in vec2 position;
@@ -12,7 +12,6 @@ precision highp float;
 
 uniform float uTime;
 uniform float uAmplitude;
-uniform vec3 uColorStops[4];
 uniform vec2 uResolution;
 uniform float uBlend;
 
@@ -62,37 +61,26 @@ float snoise(vec2 v){
   return 130.0 * dot(m, g);
 }
 
-struct ColorStop {
-  vec3 color;
-  float position;
-};
+vec3 auroraRampColor(float factor) {
+  vec3 palette[4];
+  palette[0] = vec3(0.521569, 0.709804, 1.0);      // #84B5FF
+  palette[1] = vec3(0.019608, 0.411765, 1.0);        // #0569FF
+  palette[2] = vec3(0.682353, 0.556863, 1.0);      // #AE8EFF
+  palette[3] = vec3(1.0, 0.8, 0.647059);           // #FFCCA5
 
-#define COLOR_RAMP(colors, factor, finalColor) { \
-  int index = 0; \
-  for (int i = 0; i < 3; i++) { \
-    ColorStop currentColor = colors[i]; \
-    bool isInBetween = currentColor.position <= factor; \
-    index = int(mix(float(index), float(i), float(isInBetween))); \
-  } \
-  ColorStop currentColor = colors[index]; \
-  ColorStop nextColor = colors[index + 1]; \
-  float range = nextColor.position - currentColor.position; \
-  float lerpFactor = (factor - currentColor.position) / range; \
-  finalColor = mix(currentColor.color, nextColor.color, lerpFactor); \
+  float scaled = clamp(factor, 0.0, 0.999999) * 3.0;
+  int idx = int(floor(scaled));
+  float blend = fract(scaled);
+  // Narrow crossfade so most of each band stays on an exact palette stop.
+  blend = smoothstep(0.44, 0.56, blend);
+  return mix(palette[idx], palette[idx + 1], blend);
 }
 
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution;
   uv.y = 1.0 - uv.y;
 
-  ColorStop colors[4];
-  colors[0] = ColorStop(uColorStops[0], 0.0);
-  colors[1] = ColorStop(uColorStops[1], 0.333);
-  colors[2] = ColorStop(uColorStops[2], 0.666);
-  colors[3] = ColorStop(uColorStops[3], 1.0);
-
-  vec3 rampColor;
-  COLOR_RAMP(colors, uv.x, rampColor);
+  vec3 rampColor = auroraRampColor(uv.x);
 
   float height = snoise(vec2(uv.x * 2.0 + uTime * 0.1, uTime * 0.25)) * 0.5 * uAmplitude;
   height = exp(height);
@@ -108,10 +96,7 @@ void main() {
 }
 `;
 
-function hexToRgb(hex) {
-  const c = new Color(hex);
-  return [c.r, c.g, c.b];
-}
+export const AURORA_COLOR_STOPS = ["#84B5FF", "#0569FF", "#AE8EFF", "#FFCCA5"];
 
 /**
  * Mount a react-bits–style Aurora background into a container element.
@@ -122,13 +107,19 @@ export function initAurora(container, options = {}) {
   if (!container) return null;
 
   const settings = {
-    colorStops: ["#84B5FF", "#0569FF", "#AE8EFF", "#FFCCA5"],
     amplitude: 0.8,
     blend: 0.5,
     speed: 1.0,
     animate: true,
     ...options,
   };
+
+  if (
+    options.colorStops &&
+    options.colorStops.some((stop, i) => stop?.toUpperCase() !== AURORA_COLOR_STOPS[i])
+  ) {
+    console.warn("initAurora: only the brand aurora palette is supported; using AURORA_COLOR_STOPS.");
+  }
 
   const renderer = new Renderer({
     alpha: true,
@@ -152,18 +143,12 @@ export function initAurora(container, options = {}) {
     delete geometry.attributes.uv;
   }
 
-  const paddedStops = settings.colorStops.slice(0, 4);
-  while (paddedStops.length < 4) {
-    paddedStops.push(paddedStops[paddedStops.length - 1]);
-  }
-
   const program = new Program(gl, {
     vertex: VERT,
     fragment: FRAG,
     uniforms: {
       uTime: { value: 0 },
       uAmplitude: { value: settings.amplitude },
-      uColorStops: { value: paddedStops.map(hexToRgb) },
       uResolution: { value: [container.offsetWidth, container.offsetHeight] },
       uBlend: { value: settings.blend },
     },
@@ -202,7 +187,6 @@ export function initAurora(container, options = {}) {
     program.uniforms.uTime.value = t * 0.01 * settings.speed * 0.1;
     program.uniforms.uAmplitude.value = settings.amplitude;
     program.uniforms.uBlend.value = settings.blend;
-    program.uniforms.uColorStops.value = paddedStops.map(hexToRgb);
 
     const [rw, rh] = program.uniforms.uResolution.value;
     if (!rw || !rh) {
