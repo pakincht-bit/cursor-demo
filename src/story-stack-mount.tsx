@@ -12,9 +12,9 @@ if (heroBlurMount) {
       <GradualBlur
         target="parent"
         position="bottom"
-        height="8rem"
-        tabletHeight="6rem"
-        mobileHeight="4rem"
+        height="7rem"
+        tabletHeight="5.25rem"
+        mobileHeight="3.5rem"
         responsive
         strength={2}
         divCount={5}
