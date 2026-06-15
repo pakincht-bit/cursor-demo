@@ -18,7 +18,7 @@ const PLANS = [
     teamSize: "1 person",
     description:
       "For individuals. Hire freelancers on your own — pay per project before work begins.",
-    cta: "Sign up",
+    cta: "Sign-up",
     ctaUrl: PERSONAL_CTA_URL,
     ctaVariant: "outline" as const,
     highlighted: false,
@@ -29,7 +29,7 @@ const PLANS = [
     teamSize: "2–50 teammates",
     description:
       "Self-serve. For SMEs and mid-market teams that want to hire freelancers as a business, not as individuals.",
-    cta: "Submit",
+    cta: "Join waitlist",
     ctaUrl: PRIMARY_CTA_URL,
     ctaVariant: "primary" as const,
     highlighted: true,
@@ -40,7 +40,7 @@ const PLANS = [
     teamSize: "50+ employees",
     description:
       "Sales-led. For large businesses with procurement, legal, and security review requirements.",
-    cta: "Talk to Enterprise team",
+    cta: "Contract Enterprise team",
     ctaUrl: ENTERPRISE_CTA_URL,
     ctaVariant: "outline" as const,
     highlighted: false,

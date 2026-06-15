@@ -153,9 +153,11 @@ testimonialCards.forEach((card) => {
 
 (function initHeroAurora() {
   const canvasHost = document.querySelector(".hero__aurora-canvas");
+  const hero = document.getElementById("hero");
   if (!canvasHost) return;
 
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const coarsePointerQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
 
   function readTimeVar(name, fallback) {
     const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -178,12 +180,26 @@ testimonialCards.forEach((card) => {
       requestAnimationFrame(boot);
       return;
     }
-    initAurora(canvasHost, {
+
+    const isCoarsePointer = coarsePointerQuery.matches;
+    const aurora = initAurora(canvasHost, {
       colorStops: ["#84B5FF", "#0569FF", "#AE8EFF", "#FFCCA5"],
       amplitude: 1.15,
       blend: 0.62,
       speed: 1.0,
+      antialias: !isCoarsePointer,
+      dpr: isCoarsePointer ? 1 : Math.min(window.devicePixelRatio || 1, 2),
     });
+
+    if (!aurora || !hero) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        aurora.setAnimate(entry.isIntersecting);
+      },
+      { rootMargin: "120px 0px", threshold: 0 }
+    );
+    observer.observe(hero);
   }
 
   window.setTimeout(boot, getAuroraDelayMs());

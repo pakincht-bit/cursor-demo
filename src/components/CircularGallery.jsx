@@ -27,6 +27,52 @@ function autoBind(instance) {
 const DEFAULT_FONT = 'bold 30px Figtree';
 const DEFAULT_FONT_URL =
   'https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&display=swap';
+const MOBILE_TEXTURE_MAX = 1024;
+
+function prefersLightweightGallery() {
+  return window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+}
+
+function downscaleImageSource(source, maxDimension = MOBILE_TEXTURE_MAX) {
+  let width = source.naturalWidth || source.width;
+  let height = source.naturalHeight || source.height;
+  if (!width || !height || Math.max(width, height) <= maxDimension) {
+    return source;
+  }
+
+  let current = source;
+
+  while (Math.max(width, height) > maxDimension * 1.5) {
+    width = Math.max(1, Math.round(width * 0.5));
+    height = Math.max(1, Math.round(height * 0.5));
+    const stepCanvas = document.createElement('canvas');
+    stepCanvas.width = width;
+    stepCanvas.height = height;
+    const stepCtx = stepCanvas.getContext('2d');
+    if (!stepCtx) return source;
+    stepCtx.imageSmoothingEnabled = true;
+    stepCtx.imageSmoothingQuality = 'high';
+    stepCtx.drawImage(current, 0, 0, width, height);
+    current = stepCanvas;
+  }
+
+  const scale = maxDimension / Math.max(width, height);
+  const finalWidth = Math.max(1, Math.round(width * scale));
+  const finalHeight = Math.max(1, Math.round(height * scale));
+  const canvas = document.createElement('canvas');
+  canvas.width = finalWidth;
+  canvas.height = finalHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return source;
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(current, 0, 0, finalWidth, finalHeight);
+  return canvas;
+}
+
+function prepareTextureImage(source) {
+  return prefersLightweightGallery() ? downscaleImageSource(source) : source;
+}
 
 function loadImage(src) {
   return new Promise((resolve, reject) => {
@@ -71,7 +117,7 @@ async function createLayeredCardImage(bgSrc, overlaySrc) {
   const ctx = canvas.getContext('2d');
   drawCover(ctx, bg, width, height);
   drawCover(ctx, overlay, width, height);
-  return canvas;
+  return prepareTextureImage(canvas);
 }
 
 function deriveFontFamilyFromUrl(url) {
@@ -408,7 +454,9 @@ class Media {
   }
   createShader() {
     const texture = new Texture(this.gl, {
-      generateMipmaps: true
+      generateMipmaps: true,
+      minFilter: this.gl.LINEAR_MIPMAP_LINEAR,
+      magFilter: this.gl.LINEAR
     });
     this.program = new Program(this.gl, {
       depthTest: false,
@@ -419,14 +467,10 @@ class Media {
         attribute vec2 uv;
         uniform mat4 modelViewMatrix;
         uniform mat4 projectionMatrix;
-        uniform float uTime;
-        uniform float uSpeed;
         varying vec2 vUv;
         void main() {
           vUv = uv;
-          vec3 p = position;
-          p.z = (sin(p.x * 4.0 + uTime) * 1.5 + cos(p.y * 2.0 + uTime) * 1.5) * (0.1 + uSpeed * 0.5);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
       `,
       fragment: ROUNDED_IMAGE_FRAGMENT,
@@ -434,23 +478,22 @@ class Media {
         tMap: { value: texture },
         uPlaneSizes: { value: [0, 0] },
         uImageSizes: { value: [0, 0] },
-        uSpeed: { value: 0 },
-        uTime: { value: 100 * Math.random() },
         uBorderRadius: { value: this.borderRadius }
       },
       transparent: true
     });
     const applyTexture = image => {
-      texture.image = image;
+      const prepared = prepareTextureImage(image);
+      texture.image = prepared;
       this.program.uniforms.uImageSizes.value = [
-        image.naturalWidth || image.width,
-        image.naturalHeight || image.height
+        prepared.naturalWidth || prepared.width,
+        prepared.naturalHeight || prepared.height
       ];
     };
 
     const loadCardImage = this.overlayImage
       ? createLayeredCardImage(this.image, this.overlayImage)
-      : loadImage(this.image);
+      : loadImage(this.image).then(prepareTextureImage);
 
     loadCardImage.then(applyTexture).catch(() => {
       loadImage(this.image).then(applyTexture).catch(() => {});
@@ -498,12 +541,6 @@ class Media {
         this.plane.position.y = arc;
         this.plane.rotation.z = Math.sign(x) * Math.asin(effectiveX / R);
       }
-    }
-
-    this.speed = scroll.current - scroll.last;
-    if (!this.staticGallery) {
-      this.program.uniforms.uTime.value += 0.04;
-      this.program.uniforms.uSpeed.value = this.speed;
     }
 
     if (this.staticGallery || !this.loopItems) return;
@@ -586,6 +623,8 @@ class App {
     this.scrollTravel = 0;
     this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0 };
     this.onCheckDebounce = debounce(this.onCheck, 200);
+    this.running = true;
+    autoBind(this);
     this.createRenderer();
     this.createCamera();
     this.createScene();
@@ -631,10 +670,13 @@ class App {
     }
   }
   createRenderer() {
+    const lightweight = prefersLightweightGallery();
     this.renderer = new Renderer({
       alpha: true,
-      antialias: true,
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
+      antialias: !lightweight,
+      dpr: lightweight
+        ? Math.min(window.devicePixelRatio || 1, 1.5)
+        : Math.min(window.devicePixelRatio || 1, 2)
     });
     this.gl = this.renderer.gl;
     this.gl.clearColor(0, 0, 0, 0);
@@ -650,8 +692,8 @@ class App {
   }
   createGeometry() {
     this.planeGeometry = new Plane(this.gl, {
-      heightSegments: 50,
-      widthSegments: 100
+      heightSegments: 1,
+      widthSegments: 1
     });
   }
   createMedias(items, bend = 1, textColor, borderRadius, font) {
@@ -748,6 +790,8 @@ class App {
     this.scroll.last = offset;
   }
   update() {
+    if (!this.running) return;
+
     if (!this.interactive && !this.scrollLinked) {
       this.scroll.current = this.scroll.target;
     } else {
@@ -759,7 +803,17 @@ class App {
     }
     this.renderer.render({ scene: this.scene, camera: this.camera });
     this.scroll.last = this.scroll.current;
-    this.raf = window.requestAnimationFrame(this.update.bind(this));
+    this.raf = window.requestAnimationFrame(this.update);
+  }
+  setRunning(value) {
+    if (this.running === value) return;
+    this.running = value;
+    if (this.running) {
+      this.raf = window.requestAnimationFrame(this.update);
+    } else {
+      window.cancelAnimationFrame(this.raf);
+      this.raf = 0;
+    }
   }
   addEventListeners() {
     this.boundOnResize = this.onResize.bind(this);
@@ -781,7 +835,7 @@ class App {
     this.container.addEventListener('touchend', this.boundOnTouchUp);
   }
   destroy() {
-    window.cancelAnimationFrame(this.raf);
+    this.setRunning(false);
     window.removeEventListener('resize', this.boundOnResize);
     if (this.enableWheel) {
       this.container.removeEventListener('wheel', this.boundOnWheel);
@@ -793,9 +847,10 @@ class App {
     this.container.removeEventListener('touchstart', this.boundOnTouchDown);
     this.container.removeEventListener('touchmove', this.boundOnTouchMove);
     this.container.removeEventListener('touchend', this.boundOnTouchUp);
-    if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
+    if (this.renderer?.gl?.canvas?.parentNode) {
       this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
     }
+    this.renderer?.gl?.getExtension('WEBGL_lose_context')?.loseContext();
   }
 }
 
@@ -824,6 +879,9 @@ export default forwardRef(function CircularGallery(
   useImperativeHandle(ref, () => ({
     setScrollProgress(progress) {
       appRef.current?.setScrollProgress(progress);
+    },
+    setRunning(value) {
+      appRef.current?.setRunning(value);
     }
   }));
 
@@ -869,6 +927,20 @@ export default forwardRef(function CircularGallery(
     labelInside,
     duplicateItems
   ]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        appRef.current?.setRunning(entry.isIntersecting);
+      },
+      { rootMargin: '80px 0px', threshold: 0 }
+    );
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
   const staticClass = interactive ? '' : ' circular-gallery--static';
   return (
     <div className={`circular-gallery${staticClass} ${className}`.trim()} ref={containerRef} />

@@ -13,6 +13,10 @@
   isolation: isolate;
 }
 
+.gradual-blur--gradient-fallback {
+  isolation: isolate;
+}
+
 @supports not (backdrop-filter: blur(1px)) {
   .gradual-blur-inner > div {
     background: rgba(0, 0, 0, 0.3);

@@ -133,7 +133,8 @@ export function initAurora(container, options = {}) {
   const renderer = new Renderer({
     alpha: true,
     premultipliedAlpha: true,
-    antialias: true,
+    antialias: settings.antialias !== false,
+    dpr: settings.dpr ?? Math.min(window.devicePixelRatio || 1, 2),
   });
   const gl = renderer.gl;
   gl.clearColor(0, 0, 0, 0);
@@ -195,13 +196,14 @@ export function initAurora(container, options = {}) {
   let running = settings.animate;
 
   function update(t) {
-    if (running) {
-      animateId = requestAnimationFrame(update);
-      program.uniforms.uTime.value = t * 0.01 * settings.speed * 0.1;
-      program.uniforms.uAmplitude.value = settings.amplitude;
-      program.uniforms.uBlend.value = settings.blend;
-      program.uniforms.uColorStops.value = paddedStops.map(hexToRgb);
-    }
+    if (!running) return;
+
+    animateId = requestAnimationFrame(update);
+    program.uniforms.uTime.value = t * 0.01 * settings.speed * 0.1;
+    program.uniforms.uAmplitude.value = settings.amplitude;
+    program.uniforms.uBlend.value = settings.blend;
+    program.uniforms.uColorStops.value = paddedStops.map(hexToRgb);
+
     const [rw, rh] = program.uniforms.uResolution.value;
     if (!rw || !rh) {
       if (!resize() && !hasSize()) return;

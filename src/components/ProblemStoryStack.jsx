@@ -196,6 +196,29 @@ function parseStackPositionPx(value) {
   return parseFloat(value) || 0;
 }
 
+function useScrollStackCardVisibility(anchorRef) {
+  const visibleRef = useRef(false);
+
+  useEffect(() => {
+    const anchor = anchorRef.current;
+    if (!anchor) return undefined;
+
+    const card = anchor.closest('.scroll-stack-card');
+    if (!card) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting;
+      },
+      { rootMargin: '80px 0px', threshold: 0 }
+    );
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [anchorRef]);
+
+  return visibleRef;
+}
+
 function getBridgePinMetrics(card) {
   const viewport = window.innerHeight;
   const scroller = card.closest('.scroll-stack-scroller');
@@ -309,6 +332,7 @@ function BridgeScene({ scene }) {
   const linesRef = useRef(null);
   const badgeRef = useRef(null);
   const headlineRef = useRef(null);
+  const visibleRef = useScrollStackCardVisibility(cardRef);
 
   useEffect(() => {
     let frame = 0;
@@ -374,16 +398,17 @@ function BridgeScene({ scene }) {
     };
 
     const tick = () => {
-      const card = cardRef.current?.closest('.scroll-stack-card');
-      const progress = card ? getBridgeScrollProgress(card) : 0;
-
-      updateScene(progress);
+      if (visibleRef.current) {
+        const card = cardRef.current?.closest('.scroll-stack-card');
+        const progress = card ? getBridgeScrollProgress(card) : 0;
+        updateScene(progress);
+      }
       frame = requestAnimationFrame(tick);
     };
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [visibleRef]);
 
   return (
     <>
@@ -676,21 +701,24 @@ function TeamPlatformScene({ scene }) {
 function FreelancerGallery({ scene }) {
   const cardRef = useRef(null);
   const galleryRef = useRef(null);
+  const visibleRef = useScrollStackCardVisibility(cardRef);
 
   useEffect(() => {
     let frame = 0;
 
     const tick = () => {
-      const card = cardRef.current?.closest('.scroll-stack-card');
-      if (card && galleryRef.current) {
-        galleryRef.current.setScrollProgress(getGalleryScrollProgress(card));
+      if (visibleRef.current) {
+        const card = cardRef.current?.closest('.scroll-stack-card');
+        if (card && galleryRef.current) {
+          galleryRef.current.setScrollProgress(getGalleryScrollProgress(card));
+        }
       }
       frame = requestAnimationFrame(tick);
     };
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [visibleRef]);
 
   return (
     <>

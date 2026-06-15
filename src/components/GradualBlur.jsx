@@ -45,13 +45,23 @@ const CURVE_FUNCTIONS = {
 };
 
 const mergeConfigs = (...configs) => configs.reduce((acc, c) => ({ ...acc, ...c }), {});
-const getGradientDirection = position =>
-  ({
-    top: 'to top',
-    bottom: 'to bottom',
-    left: 'to left',
-    right: 'to right'
-  })[position] || 'to bottom';
+function prefersLightweightBlur() {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches
+  );
+}
+
+function getGradientDirection(position) {
+  return (
+    {
+      top: 'to top',
+      bottom: 'to bottom',
+      left: 'to left',
+      right: 'to right'
+    }[position] || 'to bottom'
+  );
+}
 
 const debounce = (fn, wait) => {
   let t;
@@ -196,6 +206,40 @@ function GradualBlur(props) {
 
   const { hoverIntensity, animated, onAnimationComplete, duration } = config;
 
+  const lightweightFallbackStyle = useMemo(() => {
+    const isVertical = ['top', 'bottom'].includes(config.position);
+    const isPageTarget = config.target === 'page';
+    const direction = getGradientDirection(config.position);
+    const fade =
+      config.position === 'top'
+        ? `linear-gradient(${direction}, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.45) 42%, transparent 100%)`
+        : `linear-gradient(${direction}, transparent 0%, rgba(255, 255, 255, 0.45) 58%, rgba(255, 255, 255, 0.92) 100%)`;
+
+    return {
+      position: isPageTarget ? 'fixed' : 'absolute',
+      pointerEvents: 'none',
+      zIndex: isPageTarget ? config.zIndex + 100 : config.zIndex,
+      background: fade,
+      opacity: config.opacity,
+      ...(isVertical
+        ? {
+            height: responsiveHeight,
+            width: responsiveWidth || '100%',
+            [config.position]: 0,
+            left: 0,
+            right: 0
+          }
+        : {
+            width: responsiveWidth || responsiveHeight,
+            height: '100%',
+            [config.position]: 0,
+            top: 0,
+            bottom: 0
+          }),
+      ...config.style
+    };
+  }, [config, responsiveHeight, responsiveWidth]);
+
   useEffect(() => {
     if (isVisible && animated === 'scroll' && onAnimationComplete) {
       const ms = parseFloat(duration) * 1000;
@@ -203,6 +247,17 @@ function GradualBlur(props) {
       return () => clearTimeout(t);
     }
   }, [isVisible, animated, onAnimationComplete, duration]);
+
+  if (prefersLightweightBlur()) {
+    return (
+      <div
+        ref={containerRef}
+        className={`gradual-blur gradual-blur--gradient-fallback ${config.target === 'page' ? 'gradual-blur-page' : 'gradual-blur-parent'} ${config.className}`}
+        style={lightweightFallbackStyle}
+        aria-hidden="true"
+      />
+    );
+  }
 
   return (
     <div
