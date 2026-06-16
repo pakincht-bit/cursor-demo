@@ -61,19 +61,65 @@ float snoise(vec2 v){
   return 130.0 * dot(m, g);
 }
 
+float hueToRgb(float p, float q, float t) {
+  if (t < 0.0) t += 1.0;
+  if (t > 1.0) t -= 1.0;
+  if (t < 1.0 / 6.0) return p + (q - p) * 6.0 * t;
+  if (t < 0.5) return q;
+  if (t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6.0;
+  return p;
+}
+
+vec3 hslToRgb(vec3 hsl) {
+  if (hsl.y <= 0.0) return vec3(hsl.z);
+  float q = hsl.z < 0.5 ? hsl.z * (1.0 + hsl.y) : hsl.z + hsl.y - hsl.z * hsl.y;
+  float p = 2.0 * hsl.z - q;
+  return vec3(
+    hueToRgb(p, q, hsl.x + 1.0 / 3.0),
+    hueToRgb(p, q, hsl.x),
+    hueToRgb(p, q, hsl.x - 1.0 / 3.0)
+  );
+}
+
+vec3 rgbToHsl(vec3 rgb) {
+  float maxC = max(rgb.r, max(rgb.g, rgb.b));
+  float minC = min(rgb.r, min(rgb.g, rgb.b));
+  float l = (maxC + minC) * 0.5;
+  if (maxC == minC) return vec3(0.0, 0.0, l);
+
+  float d = maxC - minC;
+  float s = l > 0.5 ? d / (2.0 - maxC - minC) : d / (maxC + minC);
+  float h;
+  if (maxC == rgb.r) h = (rgb.g - rgb.b) / d + (rgb.g < rgb.b ? 6.0 : 0.0);
+  else if (maxC == rgb.g) h = (rgb.b - rgb.r) / d + 2.0;
+  else h = (rgb.r - rgb.g) / d + 4.0;
+  return vec3(h / 6.0, s, l);
+}
+
+// Short-path hue interpolation keeps purple→peach in magenta/pink, not yellow.
+vec3 mixPaletteColors(vec3 a, vec3 b, float t) {
+  vec3 ha = rgbToHsl(a);
+  vec3 hb = rgbToHsl(b);
+  float dh = hb.x - ha.x;
+  if (dh > 0.5) dh -= 1.0;
+  else if (dh < -0.5) dh += 1.0;
+  float h = fract(ha.x + dh * t);
+  float s = mix(ha.y, hb.y, t);
+  float l = mix(ha.z, hb.z, t);
+  return hslToRgb(vec3(h, s, l));
+}
+
 vec3 auroraRampColor(float factor) {
   vec3 palette[4];
   palette[0] = vec3(0.521569, 0.709804, 1.0);      // #84B5FF
-  palette[1] = vec3(0.019608, 0.411765, 1.0);        // #0569FF
+  palette[1] = vec3(0.019608, 0.411765, 1.0);      // #0569FF
   palette[2] = vec3(0.682353, 0.556863, 1.0);      // #AE8EFF
   palette[3] = vec3(1.0, 0.8, 0.647059);           // #FFCCA5
 
   float scaled = clamp(factor, 0.0, 0.999999) * 3.0;
   int idx = int(floor(scaled));
   float blend = fract(scaled);
-  // Narrow crossfade so most of each band stays on an exact palette stop.
-  blend = smoothstep(0.44, 0.56, blend);
-  return mix(palette[idx], palette[idx + 1], blend);
+  return mixPaletteColors(palette[idx], palette[idx + 1], blend);
 }
 
 void main() {
